@@ -1,0 +1,54 @@
+# Dotfiles .gitignore
+
+# OS and editor
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.netrwhist
+
+# Private configs (if any)
+git/.gitconfig_local
+bash/.bashrc_local
+
+# Backup directory
+backup/
+.backup_dotfiles/
+
+# Build artifacts
+*.o
+*.a
+*.so
+*.out
+solution
+sol
+
+# Logs
+*.log
+
+# Cache and temporary
+.cache/
+__pycache__/
+*.pyc
+
+# Node modules (if any)
+node_modules/
+
+# Virtual environments
+venv/
+env/
+.env
+
+# macOS
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+.directory
+
+# Temporary
+tmp/
+*.tmp
