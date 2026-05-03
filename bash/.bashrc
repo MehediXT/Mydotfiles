@@ -122,5 +122,10 @@ export PATH="$HOME/.npm-global/bin:$PATH"
 export PATH="$PATH:/home/osama-bin/.lmstudio/bin"
 # End of LM Studio CLI section
 
+# Fix XDG paths (override VS Code Snap settings)
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CACHE_HOME="$HOME/.cache"
+
 alias sodiku="python3 ~/AI-model/files/sodiku.py 2>/dev/null"
 alias sodiku="python3 ~/AI-model/files/sodiku.py 2>/dev/null"
