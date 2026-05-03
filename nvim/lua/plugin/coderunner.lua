@@ -24,6 +24,10 @@ return {
         },
         c = "cd $dir && gcc $fileName -o /tmp/$fileNameWithoutExt && /tmp/$fileNameWithoutExt",
       },
+      term = {
+        position = "vert",
+        size = 70,
+      },
     }
   end,
   ft = { "c", "cpp", "python", "rust", "java" },
