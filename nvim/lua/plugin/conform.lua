@@ -17,19 +17,13 @@ local function c_formatter(bufnr)
 	if has_cformat_file(bufnr) then
 		return { "clang-format" }
 	end
-	return { " " }
+	return {}
 end
 
 return {
 	"stevearc/conform.nvim",
-	event = "BufWritePre", -- uncomment for format on save
+	event = "VeryLazy",
 	opts = {
-		format_on_save = {
-			-- These options will be passed to conform.format()
-			timeout_ms = 1000000,
-			lsp_fallback = false,
-		},
-
 		formatters_by_ft = {
 			c = c_formatter,
 			cpp = { "clang-format" },
