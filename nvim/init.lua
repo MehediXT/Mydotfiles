@@ -50,3 +50,4 @@ end)
 vim.cmd [[set exrc]]
 
 vim.g.snipmate_snippets_path = vim.fn.stdpath "config" .. "/snippets/snipmate"
+--the lua 
