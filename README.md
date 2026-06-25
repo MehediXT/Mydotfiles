@@ -1,318 +1,178 @@
-# Competitive Programming Dotfiles
+# Dotfiles + System Setup
 
-A clean, minimal dotfiles repository for C++ competitive programming on Linux. Includes Neovim, Kitty terminal, Git, and Bash configurations.
+This repository is a portable Ubuntu-first workstation bootstrap for shell, terminal, editor, Git, SSH, tmux, VS Code, and package state. It is designed to recreate a development environment on a new machine with minimal manual work while keeping secrets out of version control.
 
-## 🚀 Quick Start
+## Repository Structure
 
-### Installation (One Command)
-
-```bash
-git clone https://github.com/yourusername/dotfiles.git ~/.dotfiles
-cd ~/.dotfiles
-bash install.sh
-```
-
-The script will:
-- ✅ Detect your Linux distribution (Ubuntu/Debian or Arch)
-- ✅ Install dependencies: `git`, `neovim`, `g++`, `kitty`
-- ✅ Backup your existing configs (if any) to `~/.backup_dotfiles`
-- ✅ Create symlinks for all configurations
-
-### After Installation
-
-Reload your shell:
-```bash
-source ~/.bashrc
-```
-
-## 📁 Repository Structure
-
-```
+```text
 dotfiles/
-├── install.sh              # Main installation script
-├── README.md               # This file
+├── bootstrap.sh
+├── install.sh
+├── README.md
+├── .gitignore
 ├── bash/
-│   ├── .bashrc             # Bash configuration with aliases
-│   └── .profile            # Shell profile setup
+├── cp/
 ├── git/
-│   └── .gitconfig          # Git configuration
-├── nvim/
-│   └── init.lua            # Neovim config (C++ optimized)
 ├── kitty/
-│   └── kitty.conf          # Kitty terminal config
-└── cp/
-    ├── template.cpp        # C++ competitive programming template
-    └── cpnew.sh            # Script to create new CP files
+├── nvim/
+├── packages/
+├── scripts/
+├── ssh/
+├── tmux/
+├── vscode/
+└── zsh/
 ```
 
-## ⚙️ Configuration Details
+## What Each Area Does
 
-### Bash Aliases
+- `bash/`: Bash login and interactive shell configuration.
+- `zsh/`: Portable Zsh configuration for future migration or WSL.
+- `git/`: Git defaults, aliases, editor settings, and identity fields.
+- `kitty/`: Kitty terminal configuration and theme fragments.
+- `nvim/`: Full Neovim configuration and plugin setup.
+- `tmux/`: tmux behavior, keybindings, and pane defaults.
+- `ssh/`: Tracked example only; never commit private keys.
+- `vscode/`: Extension inventory used during restore.
+- `cp/`: Competitive programming helper scripts and templates.
+- `packages/`: Package manifests for APT, Snap, and Flatpak.
+- `scripts/`: Backup, restore, bootstrap, and shared shell helpers.
 
-After installation, you'll have these handy aliases:
+## Core Commands
+
+### Fresh local install after cloning
 
 ```bash
-ll              # ls -lah (detailed listing)
-la              # ls -A (all files)
-gs              # git status
-ga              # git add
-gc              # git commit
-gp              # git push
-gl              # git log (last 10)
-compile         # g++ -o solution solution.cpp -std=c++17 -O2
-run             # ./solution
-cpcompile       # Full compilation with warnings and debug info
-```
-
-### Neovim Key Bindings
-
-| Shortcut | Action |
-|----------|--------|
-| `<leader>r` | Compile and run C++ file |
-| `<leader>w` | Quick save |
-| `<leader>q` | Quit |
-| `<leader>ev` | Edit config |
-| `<leader>sv` | Reload config |
-| `<C-h/j/k/l>` | Navigate windows |
-| `<A-j/k>` | Move lines up/down |
-
-**Leader key:** Space (`<Space>`)
-
-### Kitty Shortcuts
-
-| Shortcut | Action |
-|----------|--------|
-| `Alt+Enter` | Toggle fullscreen |
-| `Ctrl+Shift+C` | Copy |
-| `Ctrl+Shift+V` | Paste |
-| `Ctrl+Shift+T` | New tab |
-| `Ctrl+Tab` | Next tab |
-| `Ctrl+Shift+Tab` | Previous tab |
-
-## 🎯 Competitive Programming Workflow
-
-### Creating a New CP File
-
-```bash
-cpnew solution.cpp
-```
-
-This will:
-1. Copy the template from `cp/template.cpp`
-2. Create `solution.cpp` with fast I/O setup
-3. Open it in Neovim
-
-### Compiling and Running
-
-Inside Neovim, press `<Space>r` to compile and run:
-```bash
-:! g++ -o /tmp/sol % -std=c++17 -O2 && /tmp/sol
-```
-
-Or manually in terminal:
-```bash
-g++ -o solution solution.cpp -std=c++17 -O2
-./solution
-```
-
-### Using the Template
-
-The template includes:
-- Fast I/O configuration
-- Multiple test case structure
-- Common includes (`bits/stdc++.h`)
-- Basic main function with input/output
-
-Modify as needed for your problem!
-
-## 📋 Template Example
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(nullptr);
-    
-    int t;
-    cin >> t;
-    
-    while (t--) {
-        // Read input
-        int n;
-        cin >> n;
-        
-        // Solve problem
-        
-        
-        // Output answer
-        cout << "Answer here\n";
-    }
-    
-    return 0;
-}
-```
-
-## 🔧 Neovim Features
-
-### Tab Settings
-- Tab width: 4 spaces
-- Auto-indent: enabled
-- Smart indent: enabled
-
-### Display
-- Line numbers: enabled
-- Highlight current line: enabled
-- System clipboard support: enabled
-- True color support: enabled
-
-### Useful Commands
-```vim
-:set number         " Show line numbers
-:set nonumber       " Hide line numbers
-:set relativenumber " Use relative line numbers
-:nohl              " Clear search highlights
-```
-
-## 📝 Git Configuration
-
-- Default editor: Neovim
-- Default branch: main
-- Helpful aliases configured:
-  - `git st` → `git status`
-  - `git co` → `git checkout`
-  - `git br` → `git branch`
-  - `git visual` → Visual commit log
-
-### Customize Git User
-
-Edit `git/.gitconfig` and update:
-```ini
-[user]
-    name = Your Name
-    email = your.email@example.com
-```
-
-Or use command line:
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "your.email@example.com"
-```
-
-## 🔄 Updating Dotfiles
-
-To sync changes across machines:
-
-```bash
-cd ~/.dotfiles
-git pull
-source ~/.bashrc
-```
-
-Your symlinks remain intact, so changes take effect immediately!
-
-## 💾 Backups
-
-Before installation, existing configs are backed up to:
-```
-~/.backup_dotfiles/backup_YYYYMMDD_HHMMSS/
-```
-
-Safe to delete after verifying everything works!
-
-## ⚠️ Important Notes
-
-### What's NOT Included
-- ❌ SSH keys (`~/.ssh`)
-- ❌ Shell history (`~/.bash_history`, `~/.zsh_history`)
-- ❌ Cache files (`~/.cache`)
-- ❌ Temporary files or binaries
-- ❌ Package manager caches
-
-### What's Included
-- ✅ Shell configs (`.bashrc`, `.profile`)
-- ✅ Git configuration
-- ✅ Neovim config (minimal, fast)
-- ✅ Kitty terminal config
-- ✅ CP templates and utilities
-
-## 🛠️ Customization
-
-### Add Machine-Specific Configs
-
-Create `~/.bashrc_local` for machine-specific settings:
-```bash
-# ~/.bashrc_local
-export CUSTOM_VAR="value"
-alias myalias="command"
-```
-
-This file is sourced automatically by `.bashrc`.
-
-### Modify Neovim Plugins
-
-Edit `nvim/init.lua` to add plugins (e.g., packer.nvim, lazy.nvim).
-
-### Add New Aliases
-
-Edit `bash/.bashrc` in your dotfiles, then run:
-```bash
-source ~/.bashrc
-```
-
-## 📚 Resources
-
-- [Neovim Docs](https://neovim.io/doc/user/)
-- [Kitty Docs](https://sw.kovidgoyal.net/kitty/conf/)
-- [Bash Guide](https://mywiki.wooledge.org/BashGuide)
-- [Git Docs](https://git-scm.com/doc)
-
-## 🐛 Troubleshooting
-
-### Symlinks not working
-```bash
-# Check symlinks
-ls -la ~/.bashrc ~/.config/nvim
-
-# Reinstall
 cd ~/.dotfiles
 bash install.sh
 ```
 
-### Neovim not opening
-```bash
-# Ensure Neovim is installed
-nvim --version
+### Backup the current machine
 
-# If not installed
-sudo apt install neovim  # Ubuntu/Debian
-sudo pacman -S neovim    # Arch
+```bash
+bash scripts/backup.sh
 ```
 
-### cpnew command not found
-```bash
-# Add to PATH manually
-source ~/.bashrc
+### Restore the tracked setup
 
-# Or add to bashrc
-echo 'export PATH="$PATH:~/.dotfiles/cp"' >> ~/.bashrc
-source ~/.bashrc
+```bash
+bash scripts/restore.sh
 ```
 
-## 📄 License
+### Restore from a snapshot
 
-MIT License - Feel free to modify and use!
+```bash
+bash scripts/restore.sh --snapshot /path/to/snapshot
+```
 
-## 🤝 Contributing
+## Bootstrap Flow
 
-Feel free to fork, modify, and adapt to your needs!
+`install.sh` is a compatibility wrapper that forwards to `bootstrap.sh`.
 
----
+`bootstrap.sh` is the top-level entrypoint for a fresh machine. It delegates to `scripts/bootstrap.sh`, which in turn runs the restore flow. If the repository is missing on the machine, the top-level bootstrap can clone it when `DOTFILES_REPO_URL` is set.
 
-**Happy coding! 🚀**
+## Backup Behavior
 
-For competitive programming tips, visit:
-- [Codeforces](https://codeforces.com/)
-- [AtCoder](https://atcoder.jp/)
-- [LeetCode](https://leetcode.com/)
+The backup script captures machine-specific state into timestamped snapshots under `backups/<host>/<timestamp>/`.
+
+Included:
+
+- Bash, Zsh, Git, Kitty, Neovim, tmux, and VS Code user config.
+- SSH public configuration and host metadata.
+- APT, Snap, and Flatpak package inventories.
+- VS Code extension lists.
+
+Excluded:
+
+- Private SSH keys.
+- Passwords, tokens, or API secrets.
+- Local override files such as `~/.bashrc_local` and `~/.zshrc_local`.
+
+## Restore Behavior
+
+Restore does four things in order:
+
+1. Installs packages from `packages/apt.txt`, `packages/snap.txt`, and `packages/flatpak.txt`.
+2. Symlinks the tracked configuration roots into `$HOME`.
+3. Restores snapshot-specific files if a snapshot is supplied.
+4. Reinstalls VS Code extensions.
+
+## Security Rules
+
+- Never commit private SSH keys.
+- Never commit secrets, tokens, or machine-specific credentials.
+- Keep secrets in local override files ignored by Git.
+- Review `git status` before pushing.
+- Keep SSH config as `ssh/config.example` in Git; use your local `~/.ssh/config` for the real file.
+
+## Package Strategy
+
+- `packages/apt.txt` is the Ubuntu/Debian baseline.
+- `packages/snap.txt` is for Snap packages you explicitly want.
+- `packages/flatpak.txt` is for desktop apps that are easier to manage through Flatpak.
+
+To add a dependency:
+
+1. Install it locally.
+2. Add it to the correct manifest.
+3. Run `bash scripts/restore.sh` in a clean environment and verify the result.
+
+## Maintenance Workflow
+
+A practical routine is:
+
+```bash
+git status
+git diff
+bash scripts/backup.sh
+bash scripts/restore.sh
+```
+
+Use `backup.sh` before major config changes or before moving to a new machine. Use `restore.sh` to validate that the repo still recreates your environment correctly.
+
+## Future Migration
+
+The layout is intended to stay useful for:
+
+- Another Ubuntu machine: direct fit.
+- WSL: shell, Git, Neovim, tmux, and VS Code state remain reusable.
+- Another Linux distribution: the structure stays the same, while package manifests may need translation.
+
+## File Notes
+
+### `bash/.bashrc` and `bash/.profile`
+Shell startup files with PATH setup, aliases, and a local override hook.
+
+### `git/.gitconfig`
+Tracked Git defaults. Update the `user` section before committing as yourself.
+
+### `nvim/`
+Full Neovim config. The restore flow symlinks the directory into `~/.config/nvim`.
+
+### `kitty/`
+Terminal configuration, including theme includes.
+
+### `tmux/.tmux.conf`
+tmux keybindings and default behavior.
+
+### `vscode/extensions.txt`
+Curated extension list used by restore.
+
+### `cp/`
+Competitive programming template and launcher script.
+
+## Useful Commands
+
+```bash
+# Create a new CP file
+cpnew solution.cpp
+
+# Inspect VS Code extensions
+code --list-extensions
+
+# Regenerate a backup snapshot
+bash scripts/backup.sh
+```
+
+## Notes
+
+This repository treats tracked configuration and machine-specific state separately. If something is unique to one host, keep it in the snapshot layer or in ignored local override files.

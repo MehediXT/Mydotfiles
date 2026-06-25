@@ -1,6 +1,6 @@
 local options = {
   base46 = {
-    theme = "ayu_dark",
+    theme = "aylin",
     hl_override = {
       Include = {
         bold = true,
@@ -44,7 +44,7 @@ local options = {
       ["@constant.macro"] = { bold = true },
     },
     transparency = false,
-    theme_toggle = { "ayu_dark", "ayu_dark" },
+    theme_toggle = { "aylin", "aylin" },
   },
 
   ui = {

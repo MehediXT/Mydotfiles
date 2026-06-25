@@ -12,10 +12,27 @@
 # Private configs (if any)
 git/.gitconfig_local
 bash/.bashrc_local
+zsh/.zshrc_local
+ssh/config
+ssh/id_*
+ssh/*.pem
+ssh/*.key
+ssh/*.pub
 
 # Backup directory
 backup/
 .backup_dotfiles/
+backups/
+system-state/
+
+# VS Code machine state
+vscode/User/globalStorage/
+vscode/User/workspaceStorage/
+vscode/User/History/
+vscode/User/Backups/
+
+# Generated restore snapshots
+snapshots/
 
 # Build artifacts
 *.o
@@ -52,3 +69,7 @@ env/
 # Temporary
 tmp/
 *.tmp
+
+# Shell history and local state
+.bash_history
+.zsh_history

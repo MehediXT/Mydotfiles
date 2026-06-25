@@ -1,0 +1,9 @@
+# Example SSH config for Git hosting and development hosts.
+# Copy this file to ~/.ssh/config and customize host aliases.
+
+Host github.com
+    HostName github.com
+    User git
+    IdentitiesOnly yes
+    AddKeysToAgent yes
+    IdentityFile ~/.ssh/id_ed25519

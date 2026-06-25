@@ -115,6 +115,7 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+[ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
 [ -r /home/osama-bin/.config/byobu/prompt ] && . /home/osama-bin/.config/byobu/prompt   #byobu-prompt#
 export PATH="$HOME/.npm-global/bin:$PATH"
 
@@ -129,3 +130,5 @@ export XDG_CACHE_HOME="$HOME/.cache"
 
 alias sodiku="python3 ~/AI-model/files/sodiku.py 2>/dev/null"
 alias sodiku="python3 ~/AI-model/files/sodiku.py 2>/dev/null"
+
+[ -f "$HOME/.bashrc_local" ] && . "$HOME/.bashrc_local"

@@ -1,0 +1,2 @@
+# Application ID|remote
+# Example: com.visualstudio.code|flathub

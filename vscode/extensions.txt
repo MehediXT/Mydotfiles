@@ -1,0 +1,7 @@
+# Curated baseline VS Code extensions.
+# Add your own extensions here, one per line.
+editorconfig.editorconfig
+esbenp.prettier-vscode
+ms-vscode.cpptools
+ms-vscode.makefile-tools
+redhat.vscode-yaml
