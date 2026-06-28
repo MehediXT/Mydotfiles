@@ -181,6 +181,24 @@ detect_code_binary() {
     return 1
 }
 
+ensure_neovim_ppa() {
+    if ! have apt-get; then
+        return 0
+    fi
+
+    if ! have add-apt-repository; then
+        run_as_root apt-get update
+        run_as_root env DEBIAN_FRONTEND=noninteractive apt-get install -y software-properties-common
+    fi
+
+    if grep -rq 'neovim-ppa/stable' /etc/apt/sources.list /etc/apt/sources.list.d/ 2>/dev/null; then
+        return 0
+    fi
+
+    log_info "Adding Neovim stable PPA (required for modern Lua configs)"
+    run_as_root add-apt-repository ppa:neovim-ppa/stable -y
+}
+
 install_apt_packages_from_file() {
     local file="$1"
 
@@ -192,6 +210,10 @@ install_apt_packages_from_file() {
     mapfile -t packages < <(read_clean_lines "$file" || true)
     if [[ ${#packages[@]} -eq 0 ]]; then
         return 0
+    fi
+
+    if [[ " ${packages[*]} " == *" neovim "* ]]; then
+        ensure_neovim_ppa
     fi
 
     run_as_root apt-get update
