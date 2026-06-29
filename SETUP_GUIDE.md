@@ -1,154 +1,238 @@
-# MyDotfiles — Setup Guide
+# 🛠️ MyDotfiles - Newborn PC Setup & Deployment Guide
 
-Transform a fresh Ubuntu/Debian machine into a complete development environment with one command.
+Transform a fresh Ubuntu/Debian installation into your complete development environment with a single deployment script.
 
-This repository tracks personal configuration for:
+This repository contains my personal configuration files (**dotfiles**) for:
 
-- Neovim (Lazy.nvim, Aylin theme)
-- Kitty terminal
-- Bash and Zsh
-- Git, tmux, VS Code extensions
-- Competitive programming helpers (`cpnew`)
-- APT, Snap, and Flatpak package manifests
-
-For backup, restore, security rules, and maintenance details, see [README.md](README.md).
+- 🖥️ Kitty Terminal
+- ⚡ Neovim (Lazy.nvim)
+- 🐚 Zsh
+- 🪟 Tmux
+- ⚙️ Various CLI tools
 
 ---
 
-## Quick Start
+# 📋 Table of Contents
 
-### 1. Clone the repository
+- [Step 1: Pre-requisites & Application Installation](#-step-1-pre-requisites--application-installation)
+- [Step 2: Clone and Deploy Your Dotfiles](#-step-2-clone-and-deploy-your-dotfiles)
+- [Step 3: Post Installation](#-step-3-post-installation)
+- [Troubleshooting](#-troubleshooting)
+
+---
+
+# 📦 Step 1: Pre-requisites & Application Installation
+
+Before deploying the dotfiles, install all required software.
+
+---
+
+## 1. Update Your System
+
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+---
+
+## 2. Install Core Utilities
+
+These packages are required for development, compiling plugins, and managing repositories.
+
+```bash
+sudo apt install -y \
+git \
+curl \
+build-essential \
+stow \
+zsh \
+tmux
+```
+
+---
+
+## 3. Install Neovim (Latest Stable via Snap)
+
+> **Important**
+>
+> This dotfiles repository requires a modern version of Neovim (0.10+).
+>
+> The Ubuntu/Debian repositories often provide an older version that is incompatible with modern Lua-based configurations and Lazy.nvim.
+>
+> Install the latest stable release using **Snap**.
+
+If Snap is not installed:
+
+```bash
+sudo apt install -y snapd
+```
+
+Install the latest stable version of Neovim:
+
+```bash
+sudo snap install nvim --classic
+```
+
+Verify the installation:
+
+```bash
+nvim --version
+```
+
+You should see a recent Neovim release (0.10.x or newer).
+
+
+---
+
+## 4. Install Kitty Terminal
+
+```bash
+sudo apt install -y kitty
+```
+
+---
+
+# 🚀 Step 2: Clone and Deploy Your Dotfiles
+
+After installing all required software, deploy your configurations.
+
+---
+
+## 1. Clone the Repository
+
+Clone directly into a hidden directory inside your home folder.
 
 ```bash
 git clone https://github.com/MehediXT/Mydotfiles.git ~/.dotfiles
+```
+
+Move into the repository.
+
+```bash
 cd ~/.dotfiles
 ```
 
-### 2. Run the installer
+---
 
-```bash
-bash install.sh
-```
+## 2. Make the Installer Executable
 
-Or, if the script is executable:
+Fresh Git repositories do not preserve executable permissions.
 
 ```bash
 chmod +x install.sh
+```
+
+---
+
+## 3. Run the Installer
+
+```bash
 ./install.sh
 ```
 
-### 3. Reload your shell
+The installer will:
 
-```bash
-source ~/.bashrc
-```
-
----
-
-## What the Installer Does
-
-`install.sh` is a compatibility entrypoint that forwards to `bootstrap.sh`.
-
-The bootstrap flow runs `scripts/restore.sh`, which:
-
-1. Installs packages from `packages/apt.txt`, `packages/snap.txt`, and `packages/flatpak.txt`
-2. Adds the Neovim stable PPA when needed (Ubuntu's default Neovim is too old for this config)
-3. Symlinks tracked configs into `$HOME`:
-   - Bash (`.bashrc`, `.profile`)
-   - Zsh (`.zshrc`, `.zprofile`)
-   - Git (`.gitconfig`)
-   - Kitty (`~/.config/kitty`)
-   - Neovim (`~/.config/nvim`)
-   - tmux (`~/.tmux.conf`)
-   - `cpnew` helper (`~/.local/bin/cpnew`)
-4. Installs VS Code extensions from `vscode/extensions.txt` when `code` is available
-
-Existing files are moved to `~/.local/state/dotfiles/pre-restore/` before linking — nothing is deleted.
+- Remove old configuration folders
+- Create the required directory structure
+- Create symbolic links
+- Deploy all configurations
 
 ---
 
-## Post Installation
+# 🎨 Step 3: Post Installation
 
-### Initialize Neovim
+## Initialize Neovim
 
-Launch Neovim for the first time:
+Launch Neovim for the first time.
 
 ```bash
 nvim
 ```
 
-On first launch, Lazy.nvim will:
+On the first launch:
 
-- Download and install plugins
-- Compile Tree-sitter parsers
-- Apply the Aylin theme
+- Lazy.nvim installs automatically
+- All plugins are downloaded
+- Tree-sitter parsers are compiled
+- The Aylin theme is installed
 
-Wait until installation reaches **100%**, then exit with `:q` and reopen:
+Wait until installation reaches **100%**.
+
+Exit Neovim:
+
+```
+:q
+```
+
+Open it again:
 
 ```bash
 nvim
 ```
 
-### Set Zsh as your default shell (optional)
-
-```bash
-chsh -s "$(which zsh)"
-```
-
-Log out and back in for the change to take effect.
-
-### Update Git identity
-
-Edit `git/.gitconfig` with your name and email before committing:
-
-```bash
-nvim ~/.dotfiles/git/.gitconfig
-```
-
-Then re-run restore or manually symlink if needed:
-
-```bash
-bash scripts/restore.sh
-```
+Your full development environment should now be ready.
 
 ---
 
-## Optional: Restore From a Backup Snapshot
+## Make Zsh Your Default Shell (Optional)
 
-If you have a machine snapshot from `scripts/backup.sh`:
+To automatically start your customized Zsh configuration:
 
 ```bash
-bash scripts/restore.sh --snapshot /path/to/snapshot
+chsh -s $(which zsh)
 ```
 
-This restores snapshot-specific SSH config, VS Code settings, and package lists on top of the tracked dotfiles.
+> **Note**
+>
+> Log out and log back in for the change to take effect.
 
 ---
 
-## Troubleshooting
+# 🔍 Troubleshooting
 
-### Installer finishes instantly with no changes
+## install.sh Finished Instantly
 
-Make sure you are inside the repository:
+If the installer appears to finish immediately but nothing changes:
+
+- Ensure you're inside the repository.
 
 ```bash
 cd ~/.dotfiles
+```
+
+Run:
+
+```bash
+./install.sh
+```
+
+Avoid using:
+
+```bash
 bash install.sh
 ```
 
-Prefer `bash install.sh` or `./install.sh` from the repo root so paths resolve correctly.
+Some relative paths may not resolve correctly.
 
-### Symbolic links were not created
+---
 
-The restore script creates `~/.config` and other parent directories automatically. Re-run:
+## Symbolic Links Were Not Created
+
+Ensure your installer creates the parent directory before linking.
+
+Example:
 
 ```bash
-bash scripts/restore.sh
+mkdir -p "$HOME/.config"
 ```
 
-### Neovim Tree-sitter errors
+---
 
-Tree-sitter needs a C compiler. It is included in `packages/apt.txt` as `build-essential`. If missing:
+## Neovim Tree-sitter Errors
+
+Tree-sitter requires a local C compiler.
+
+Install:
 
 ```bash
 sudo apt install build-essential
@@ -156,67 +240,76 @@ sudo apt install build-essential
 
 Then reopen Neovim.
 
-### Plugins fail to install
+---
 
-Check your internet connection, then inside Neovim:
+## Plugins Fail to Install
+
+Check that you have an active internet connection.
+
+Inside Neovim:
 
 ```vim
 :Lazy sync
 ```
 
-### Verify installed versions
+or
+
+```vim
+:Lazy update
+```
+
+---
+
+## Verify Installed Versions
+
+Git
 
 ```bash
 git --version
+```
+
+Neovim
+
+```bash
 nvim --version
+```
+
+Kitty
+
+```bash
 kitty --version
+```
+
+Zsh
+
+```bash
 zsh --version
+```
+
+Tmux
+
+```bash
 tmux -V
 ```
 
-Neovim should be **0.9+** for this configuration.
-
 ---
 
-## Repository Structure
+# 📁 Repository Structure
 
 ```text
-~/.dotfiles/
-├── install.sh              # Entrypoint (forwards to bootstrap)
-├── bootstrap.sh            # Top-level bootstrap
-├── README.md               # Full documentation
-├── SETUP_GUIDE.md          # This file
-├── bash/                   # Bash shell config
-├── zsh/                    # Zsh shell config
-├── git/                    # Git defaults
-├── kitty/                  # Kitty terminal
-├── nvim/                   # Neovim + Lazy.nvim
-├── tmux/                   # tmux config
-├── cp/                     # Competitive programming tools
-├── packages/               # APT, Snap, Flatpak manifests
-├── scripts/                # backup.sh, restore.sh, common helpers
-├── ssh/                    # Example SSH config (no private keys)
-└── vscode/                 # VS Code extension list
+~/.dotfiles
+├── install.sh
+├── kitty/
+├── nvim/
+├── tmux/
+├── zsh/
+└── README.md
 ```
 
 ---
 
-## Useful Commands
+# ❤️ Credits
 
-```bash
-# Create a new competitive programming file
-cpnew solution.cpp
+Personal dotfiles maintained by **MehediXT**.
 
-# Back up current machine state
-bash scripts/backup.sh
-
-# Re-apply tracked configs and packages
-bash scripts/restore.sh
-
-# Reinstall VS Code extensions only (after restore)
-bash scripts/restore.sh
-```
-
----
-
-Personal dotfiles maintained by **MehediXT**. Fork and adapt to your own workflow.
+Feel free to fork, modify, and adapt them to your own workflow.
