@@ -1,6 +1,6 @@
 local options = {
   base46 = {
-    theme = "aylin",
+    theme = "kanagawa",
     hl_override = {
       Include = {
         bold = true,
@@ -44,7 +44,7 @@ local options = {
       ["@constant.macro"] = { bold = true },
     },
     transparency = false,
-    theme_toggle = { "aylin", "aylin" },
+    theme_toggle = { "kanagawa", "kanagawa" },
   },
 
   ui = {
