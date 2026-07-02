@@ -18,7 +18,6 @@ git clone https://github.com/yourusername/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 bash install.sh
 ```
-
 Then reload:
 ```bash
 source ~/.bashrc
