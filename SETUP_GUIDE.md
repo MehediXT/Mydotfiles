@@ -1,29 +1,29 @@
-# 🛠️ MyDotfiles - Newborn PC Setup & Deployment Guide
+# MyDotfiles Setup Guide
 
-Transform a fresh Ubuntu/Debian installation into your complete development environment with a single deployment script.
+This repository turns a fresh Ubuntu/Debian machine into a working development environment using the tracked package manifests and bootstrap scripts.
 
-This repository contains my personal configuration files (**dotfiles**) for:
+It includes configuration for:
 
-- 🖥️ Kitty Terminal
-- ⚡ Neovim (Lazy.nvim)
-- 🐚 Zsh
-- 🪟 Tmux
-- ⚙️ Various CLI tools
+- Kitty
+- Neovim with Lazy.nvim
+- Zsh
+- Tmux
+- Git, SSH, VS Code, and CLI tools
 
 ---
 
 # 📋 Table of Contents
 
-- [Step 1: Pre-requisites & Application Installation](#-step-1-pre-requisites--application-installation)
-- [Step 2: Clone and Deploy Your Dotfiles](#-step-2-clone-and-deploy-your-dotfiles)
-- [Step 3: Post Installation](#-step-3-post-installation)
-- [Troubleshooting](#-troubleshooting)
+- [Step 1: Pre-requisites](#step-1-pre-requisites)
+- [Step 2: Clone and Deploy Your Dotfiles](#step-2-clone-and-deploy-your-dotfiles)
+- [Step 3: Post Installation](#step-3-post-installation)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
-# 📦 Step 1: Pre-requisites & Application Installation
+# Step 1: Pre-requisites
 
-Before deploying the dotfiles, install all required software.
+Before deploying the dotfiles, install the base tools required by the bootstrap scripts.
 
 ---
 
@@ -37,62 +37,33 @@ sudo apt update && sudo apt upgrade -y
 
 ## 2. Install Core Utilities
 
-These packages are required for development, compiling plugins, and managing repositories.
+These packages cover the minimum required tools for cloning the repo and running the bootstrap flow.
 
 ```bash
 sudo apt install -y \
 git \
 curl \
 build-essential \
-stow \
-zsh \
-tmux
+software-properties-common
 ```
 
 ---
 
-## 3. Install Neovim (Latest Stable via Snap)
+## 3. Install the repo dependencies
 
-> **Important**
->
-> This dotfiles repository requires a modern version of Neovim (0.10+).
->
-> The Ubuntu/Debian repositories often provide an older version that is incompatible with modern Lua-based configurations and Lazy.nvim.
->
-> Install the latest stable release using **Snap**.
+The repository keeps the package list in [packages/apt.txt](packages/apt.txt). The bootstrap flow installs that list automatically, including Neovim, tmux, zsh, Kitty, and the common CLI tools used by the configs.
 
-If Snap is not installed:
+If you want to verify the package list before bootstrapping, inspect:
 
 ```bash
-sudo apt install -y snapd
+cat packages/apt.txt
 ```
 
-Install the latest stable version of Neovim:
-
-```bash
-sudo snap install nvim --classic
-```
-
-Verify the installation:
-
-```bash
-nvim --version
-```
-
-You should see a recent Neovim release (0.10.x or newer).
-
+Kitty is included there as well, so you do not need a separate manual install step.
 
 ---
 
-## 4. Install Kitty Terminal
-
-```bash
-sudo apt install -y kitty
-```
-
----
-
-# 🚀 Step 2: Clone and Deploy Your Dotfiles
+# Step 2: Clone and Deploy Your Dotfiles
 
 After installing all required software, deploy your configurations.
 
@@ -103,7 +74,7 @@ After installing all required software, deploy your configurations.
 Clone directly into a hidden directory inside your home folder.
 
 ```bash
-git clone https://github.com/MehediXT/Mydotfiles.git ~/.dotfiles
+git clone <your-dotfiles-repo-url> ~/.dotfiles
 ```
 
 Move into the repository.
@@ -114,32 +85,22 @@ cd ~/.dotfiles
 
 ---
 
-## 2. Make the Installer Executable
-
-Fresh Git repositories do not preserve executable permissions.
-
-```bash
-chmod +x install.sh
-```
-
----
-
-## 3. Run the Installer
+## 2. Run the Installer
 
 ```bash
 ./install.sh
 ```
 
-The installer will:
+`install.sh` is a thin wrapper around the real bootstrap flow. It will:
 
-- Remove old configuration folders
-- Create the required directory structure
-- Create symbolic links
-- Deploy all configurations
+- install the packages from [packages/apt.txt](packages/apt.txt)
+- add the Neovim stable PPA when needed
+- link the tracked config directories into your home folder
+- restore VS Code extensions from [vscode/extensions.txt](vscode/extensions.txt)
 
 ---
 
-# 🎨 Step 3: Post Installation
+# Step 3: Post Installation
 
 ## Initialize Neovim
 
@@ -154,7 +115,7 @@ On the first launch:
 - Lazy.nvim installs automatically
 - All plugins are downloaded
 - Tree-sitter parsers are compiled
-- The Aylin theme is installed
+- The configured theme and LSP tools are loaded
 
 Wait until installation reaches **100%**.
 
@@ -186,63 +147,34 @@ chsh -s $(which zsh)
 >
 > Log out and log back in for the change to take effect.
 
----
+# Troubleshooting
 
-# 🔍 Troubleshooting
+## The installer exits quickly
 
-## install.sh Finished Instantly
-
-If the installer appears to finish immediately but nothing changes:
-
-- Ensure you're inside the repository.
+If the installer appears to finish immediately, make sure you are running it from inside the cloned repository:
 
 ```bash
 cd ~/.dotfiles
-```
-
-Run:
-
-```bash
 ./install.sh
 ```
 
-Avoid using:
-
-```bash
-bash install.sh
-```
-
-Some relative paths may not resolve correctly.
+`install.sh` now forwards to `bootstrap.sh`, so it should work as long as the repository is present.
 
 ---
 
-## Symbolic Links Were Not Created
+## Symbolic links were not created
 
-Ensure your installer creates the parent directory before linking.
+The bootstrap flow creates the required parent directories before linking. If a file still was not linked, check whether the source exists in the repo and whether a local file already blocked the link.
 
-Example:
+## Neovim Tree-sitter errors
 
-```bash
-mkdir -p "$HOME/.config"
-```
+Tree-sitter requires a local C compiler and the repo already installs `build-essential` through the package manifest.
 
----
-
-## Neovim Tree-sitter Errors
-
-Tree-sitter requires a local C compiler.
-
-Install:
-
-```bash
-sudo apt install build-essential
-```
-
-Then reopen Neovim.
+If parsers still fail, reopen Neovim and run `:TSUpdate`.
 
 ---
 
-## Plugins Fail to Install
+## Plugins fail to install
 
 Check that you have an active internet connection.
 
@@ -260,7 +192,7 @@ or
 
 ---
 
-## Verify Installed Versions
+## Verify installed versions
 
 Git
 
@@ -294,22 +226,26 @@ tmux -V
 
 ---
 
-# 📁 Repository Structure
+# Repository Structure
 
 ```text
 ~/.dotfiles
 ├── install.sh
+├── bootstrap.sh
+├── scripts/
 ├── kitty/
 ├── nvim/
+├── packages/
 ├── tmux/
 ├── zsh/
+├── vscode/
 └── README.md
 ```
 
 ---
 
-# ❤️ Credits
+# Credits
 
-Personal dotfiles maintained by **MehediXT**.
+Personal dotfiles maintained for this workspace.
 
 Feel free to fork, modify, and adapt them to your own workflow.
