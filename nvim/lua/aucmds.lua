@@ -88,7 +88,6 @@ vim.api.nvim_create_autocmd("FileType", {
   pattern = { "haskell", "hs" },
   callback = function()
     vim.opt_local.tabstop = 4
-    vim.opt_local.tabstop = 4
     vim.opt_local.shiftwidth = 4
     vim.opt_local.expandtab = true
     vim.opt_local.textwidth = 80
@@ -106,7 +105,6 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "markdown", "rmd" },
   callback = function()
-    vim.opt_local.tabstop = 2
     vim.opt_local.tabstop = 2
     vim.opt_local.shiftwidth = 2
     vim.opt_local.expandtab = true
@@ -133,7 +131,7 @@ vim.api.nvim_create_autocmd("FileType", {
 -- Show Nvdash when all buffers are closed
 vim.api.nvim_create_autocmd("BufDelete", {
   callback = function()
-    local bufs = vim.t.bufs
+    local bufs = vim.t.bufs or {}
     if #bufs == 1 and vim.api.nvim_buf_get_name(bufs[1]) == "" then
       vim.cmd "Nvdash"
     end

@@ -220,7 +220,7 @@ Compiles and runs files based on filetype. Shows timing info for interpreted lan
 ### Display Settings
 | Setting | Value |
 |---------|-------|
-| Theme | `ayu_dark` |
+| Theme | `catppuccin` |
 | Transparency | Disabled |
 | Tab character | `│ ` |
 | Trailing spaces | Visible as `·` |
@@ -235,7 +235,7 @@ Compiles and runs files based on filetype. Shows timing info for interpreted lan
 | `html` | HTML | Formatting, completion, diagnostics |
 | `cssls` | CSS | Formatting, completion, diagnostics |
 | `clangd` | C/C++ | Smart completion, clang-tidy |
-| `luals` | Lua | Formatting, completion, diagnostics |
+| `lua_ls` | Lua | Formatting, completion, diagnostics |
 | `biome` | JavaScript/TypeScript | Linting, formatting |
 | `gopls` | Go | Formatting, completion, diagnostics |
 | `ruff` | Python | Linting, formatting |

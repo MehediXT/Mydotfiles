@@ -1,14 +1,54 @@
 return {
-	"nvim-treesitter/nvim-treesitter",
-	opts = {
-		ensure_installed = {
-			"css",
-			"go",
-			"html",
-			"lua",
-			"rust",
-			"vim",
-			"vimdoc",
-		},
-	},
+  "nvim-treesitter/nvim-treesitter",
+  build = ":TSUpdate",
+
+  event = { "BufReadPost", "BufNewFile" },
+
+  opts = {
+    ensure_installed = {
+      "bash",
+      "c",
+      "cpp",
+      "css",
+      "html",
+      "htmldjango",
+      "javascript",
+      "lua",
+      "markdown",
+      "python",
+      "rust",
+      "toml",
+      "typescript",
+      "vim",
+      "vimdoc",
+    },
+    auto_install = true,
+    sync_install = false,
+    highlight = {
+      enable = true,
+      additional_vim_regex_highlighting = false,
+    },
+    indent = {
+      enable = true,
+    },
+  },
+
+  config = function(_, opts)
+    require("nvim-treesitter").setup(opts)
+
+    vim.api.nvim_create_autocmd("FileType", {
+      group = vim.api.nvim_create_augroup("TreesitterEnable", { clear = true }),
+      callback = function(args)
+        local bufnr = args.buf
+        local ok = pcall(vim.treesitter.start, bufnr)
+        if not ok then
+          return
+        end
+
+        vim.bo[bufnr].foldmethod = "expr"
+        vim.wo[vim.api.nvim_get_current_win()].foldexpr = "v:lua.vim.treesitter.foldexpr()"
+        vim.bo[bufnr].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+      end,
+    })
+  end,
 }

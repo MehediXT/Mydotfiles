@@ -8,7 +8,6 @@ return {
     vim.keymap.set("n", "<leader>cma", ":CompetiTest add_testcase<CR>", {})
     vim.keymap.set("n", "<leader>cme", ":CompetiTest edit_testcase<CR>", {})
     vim.keymap.set("n", "<leader>cmd", ":CompetiTest delete_testcase<CR>", {})
-    vim.keymap.set("n", "<leader>cmd", ":CompetiTest delete_testcase<CR>", {})
     require("competitest").setup {
       runner_ui = { interface = "popup" },
       popup_ui = {

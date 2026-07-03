@@ -1,6 +1,6 @@
 local options = {
   base46 = {
-    theme = "kanagawa",
+    theme = "catppuccin",
     hl_override = {
       Include = {
         bold = true,
@@ -31,20 +31,33 @@ local options = {
         fg = "black",
       },
       NvDashButtons = {
-        -- 	bg = "black",
+        --  bg = "black",
         fg = "blue",
         bold = true,
       },
       TbFill = {
         bg = "NONE",
       },
-      ["@ibl.scope.underline.1"] = { underline = false },
-      ["@ibl.scope.underline"] = { underline = false },
+      ["@type"] = { fg = "#89b4fa", bold = true },
+      ["@type.definition"] = { fg = "#b4befe", bold = true },
       ["@type.builtin"] = { italic = true },
+      ["@function"] = { fg = "#a6e3a1", bold = true },
+      ["@function.call"] = { fg = "#a6e3a1" },
+      ["@function.method"] = { fg = "#94e2d5", bold = true },
+      ["@function.method.call"] = { fg = "#94e2d5" },
+      ["@constructor"] = { fg = "#fab387", bold = true },
+      ["@module"] = { fg = "#cba6f7", bold = true },
+      ["@variable.member"] = { fg = "#89dceb" },
+      ["@property"] = { fg = "#89dceb" },
+      ["@constant"] = { fg = "#f9e2af", bold = true },
       ["@constant.macro"] = { bold = true },
+      ["@keyword"] = { fg = "#cba6f7", bold = true },
+      ["@keyword.function"] = { fg = "#cba6f7", bold = true },
+      ["@operator"] = { fg = "#89b4fa" },
+      ["@punctuation.delimiter"] = { fg = "#6c7086" },
+      ["@punctuation.bracket"] = { fg = "#6c7086" },
     },
     transparency = false,
-    theme_toggle = { "kanagawa", "kanagawa" },
   },
 
   ui = {

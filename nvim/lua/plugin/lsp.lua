@@ -3,22 +3,10 @@ return {
 	config = function()
 		require("nvchad.configs.lspconfig").defaults()
 
-		local servers = {
-			"html",
-			"cssls",
-			"clangd",
-			"luals",
-			"biome",
-			"gopls",
-			"ruff",
-			"prismals",
-			"rust-analyzer",
-			"taplo",
-			"jdtls",
-		}
-		vim.lsp.enable(servers)
-
 		vim.lsp.config("clangd", {
+			on_attach = function(client, _)
+				client.server_capabilities.semanticTokensProvider = nil
+			end,
 			cmd = {
 				"clangd",
 				"--header-insertion=iwyu",
@@ -26,5 +14,19 @@ return {
 				"--clang-tidy",
 			},
 		})
+
+		local servers = {
+			"html",
+			"cssls",
+			"clangd",
+			"lua_ls",
+			"biome",
+			"gopls",
+			"ruff",
+			"prismals",
+			"taplo",
+			"jdtls",
+		}
+		vim.lsp.enable(servers)
 	end,
 }

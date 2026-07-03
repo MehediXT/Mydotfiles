@@ -83,7 +83,8 @@ return {
 				},
 			},
 			prisma_format = {
-				command = "prisma format",
+				command = "prisma",
+				args = { "format" },
 			},
 			prettypst = {
 				prepend_args = { "--style=otbs" },

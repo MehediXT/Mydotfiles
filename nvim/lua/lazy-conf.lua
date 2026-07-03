@@ -1,7 +1,7 @@
 return {
 	defaults = { lazy = true },
 	install = {
-		colorscheme = { "gruvbox" },
+		colorscheme = { "catppuccin" },
 	},
 
 	ui = {

@@ -39,7 +39,7 @@ map("i", "<C-d>", "<Del>", { desc = "Delete character under the cursor" })
 map("i", "<M-d>", "<C-o>dw", { desc = "Delete word before the cursor" })
 map("i", "<C-w>", "<C-o>db", { desc = "Delete word before the cursor" })
 map("i", "<C-u>", "<C-o>d0", { desc = "Delete from cursor to start of line" })
-map("i", "<C-k>", "<C-o>d$", { desc = "Delete from cursor to end of line" })
+--map("i", "<C-k>", "<C-o>d$", { desc = "Delete from cursor to end of line" })
 -- Undo
 map("i", "<C-z>", "<C-o>u", { desc = "Undo" })
 -- Navigation
