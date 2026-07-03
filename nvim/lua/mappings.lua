@@ -8,6 +8,12 @@ map("i", "jj", "<ESC>", { desc = "jj for quick esc" })
 map("n", "<C-y>", "m0ggVGy`0", { desc = "jj for quick esc" })
 map("n", "<leader>H", ":nohl<CR>", { desc = "Unhighlight" })
 
+-- Move between windows from Terminal mode
+map("t", "<C-h>", [[<C-\><C-n><C-w>h]])
+map("t", "<C-j>", [[<C-\><C-n><C-w>j]])
+map("t", "<C-k>", [[<C-\><C-n><C-w>k]])
+map("t", "<C-l>", [[<C-\><C-n><C-w>l]])
+
 -- Quick save and quit
 map("n", "<leader>w", ":w<CR>", { desc = "Save file" })
 map("n", "<leader>q", ":q<CR>", { desc = "Exit" })

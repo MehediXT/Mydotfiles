@@ -40,13 +40,14 @@ return {
       group = vim.api.nvim_create_augroup("TreesitterEnable", { clear = true }),
       callback = function(args)
         local bufnr = args.buf
+        local winid = vim.api.nvim_get_current_win()
         local ok = pcall(vim.treesitter.start, bufnr)
         if not ok then
           return
         end
 
-        vim.bo[bufnr].foldmethod = "expr"
-        vim.wo[vim.api.nvim_get_current_win()].foldexpr = "v:lua.vim.treesitter.foldexpr()"
+        vim.wo[winid].foldmethod = "expr"
+        vim.wo[winid].foldexpr = "v:lua.vim.treesitter.foldexpr()"
         vim.bo[bufnr].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
       end,
     })

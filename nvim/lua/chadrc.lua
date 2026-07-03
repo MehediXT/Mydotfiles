@@ -1,6 +1,6 @@
 local options = {
   base46 = {
-    theme = "catppuccin",
+    theme = "ashes",
     hl_override = {
       Include = {
         bold = true,
