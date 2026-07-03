@@ -46,6 +46,8 @@ cd ~/.dotfiles
 bash install.sh
 ```
 
+Install VS Code separately if you want the extension restore step to run.
+
 ### Backup the current machine
 
 ```bash
@@ -68,7 +70,7 @@ bash scripts/restore.sh --snapshot /path/to/snapshot
 
 `install.sh` is a compatibility wrapper that forwards to `bootstrap.sh`.
 
-`bootstrap.sh` is the top-level entrypoint for a fresh machine. It delegates to `scripts/bootstrap.sh`, which in turn runs the restore flow. If the repository is missing on the machine, the top-level bootstrap can clone it when `DOTFILES_REPO_URL` is set.
+`bootstrap.sh` is the top-level entrypoint for a fresh machine. It delegates to `scripts/bootstrap.sh`, which in turn runs the restore flow. In normal use, clone the repository first and then run `bash install.sh`.
 
 ## Backup Behavior
 
@@ -94,7 +96,7 @@ Restore does four things in order:
 1. Installs packages from `packages/apt.txt`, `packages/snap.txt`, and `packages/flatpak.txt`.
 2. Symlinks the tracked configuration roots into `$HOME`.
 3. Restores snapshot-specific files if a snapshot is supplied.
-4. Reinstalls VS Code extensions.
+4. Reinstalls VS Code extensions when a VS Code binary is available.
 
 ## Security Rules
 

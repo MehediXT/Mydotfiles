@@ -74,7 +74,7 @@ After installing all required software, deploy your configurations.
 Clone directly into a hidden directory inside your home folder.
 
 ```bash
-git clone <your-dotfiles-repo-url> ~/.dotfiles
+git clone <https://github.com/MehediXT/Mydotfiles.git> ~/.dotfiles
 ```
 
 Move into the repository.
