@@ -6,3 +6,4 @@ return {
     opts = require "configs.treesitter",
   },
 }
+--yooo
