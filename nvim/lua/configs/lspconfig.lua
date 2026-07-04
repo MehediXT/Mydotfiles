@@ -1,6 +1,5 @@
-require("nvchad.configs.lspconfig").defaults()
+local lspconfig = require("lspconfig")
 
-local servers = { "html", "cssls" }
-vim.lsp.enable(servers)
-
--- read :h vim.lsp.config for changing options of lsp servers 
+lspconfig.clangd.setup({
+  cmd = { "clangd", "--background-index" },
+})

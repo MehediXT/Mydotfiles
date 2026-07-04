@@ -9,7 +9,7 @@ function Compile()
 	local command
 	local interpreted = false
 	local time = "/usr/bin/time -f '\ntook: %es'"
-	local interpreted_langs = { "c", "python", "lua" }
+	local interpreted_langs = { "c", "python", "lua", "cpp", "java"}
 
 	for _, v in ipairs(interpreted_langs) do
 		if v == filetype then

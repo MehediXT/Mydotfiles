@@ -10,7 +10,7 @@ return {
 		lspFeatures = {
 			enabled = true,
 			chunks = "curly",
-			languages = { "c", "r", "python", "julia", "bash", "html" },
+			languages = { "c", "r", "python", "julia", "bash", "html" , "lua", "cpp"},
 			diagnostics = {
 				enabled = true,
 				triggers = { "BufWritePost" },
