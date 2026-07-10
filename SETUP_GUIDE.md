@@ -16,7 +16,8 @@ It includes configuration for:
 
 - [Step 1: Pre-requisites](#step-1-pre-requisites)
 - [Step 2: Clone and Deploy Your Dotfiles](#step-2-clone-and-deploy-your-dotfiles)
-- [Step 3: Post Installation](#step-3-post-installation)
+- [Step 3: Copying this setup to another new device](#step-3-copying-this-setup-to-another-new-device)
+- [Step 4: Post Installation](#step-4-post-installation)
 - [Troubleshooting](#troubleshooting)
 
 ---
@@ -91,53 +92,81 @@ cd ~/.dotfiles
 ./install.sh
 ```
 
-`install.sh` is a thin wrapper around the real bootstrap flow. It will:
+`install.sh` makes sure the base tools (`git`, `curl`, `ca-certificates`) exist, then forwards to `bootstrap.sh`. The bootstrap flow will:
 
 - install the packages from [packages/apt.txt](packages/apt.txt)
 - add the Neovim stable PPA when needed
 - link the tracked config directories into your home folder
 - restore VS Code extensions from [vscode/extensions.txt](vscode/extensions.txt)
+- **build the Neovim environment automatically** (install plugins via Lazy and compile Tree-sitter grammars) so you do not need a manual first launch
+
+### Installer options
+
+`install.sh` passes all arguments through to `bootstrap.sh`. Useful flags:
+
+```bash
+bash install.sh --no-build     # link configs but skip the Neovim plugin/treesitter build
+bash install.sh --set-zsh      # also make zsh your default login shell
+bash install.sh --target ~/dotfiles   # clone/use the repo somewhere other than ~/.dotfiles
+DOTFILES_REPO_URL=https://github.com/you/dotfiles.git bash install.sh   # use your own fork
+```
+
+Run `bash bootstrap.sh --help` for the full list.
 
 ---
 
-# Step 3: Post Installation
+## 3. Copying this setup to another new device
 
-## Initialize Neovim
+There are two supported ways to move the environment to a fresh machine.
 
-Launch Neovim for the first time.
+### Option A — Clone from Git (recommended)
+
+This is the cleanest path and is what the installer assumes by default. A clone never carries nested `.git` directories, so the target stays a single clean repository.
+
+```bash
+git clone https://github.com/MehediXT/Mydotfiles.git ~/.dotfiles
+cd ~/.dotfiles
+bash install.sh
+```
+
+### Option B — Copy with `cp` / `rsync` / `tar`
+
+Use this when you cannot clone (e.g. an air-gapped or offline machine). One important caveat: the `nvim/` directory is tracked by this repo **and** kept as its own git repository, so a raw copy would bring along `nvim/.git` and create a confused nested repo on the target. Re-run the installer with `--clean-nested-git` (only on the copied repo, never on the original) to strip nested `.git` directories:
+
+```bash
+rsync -a --exclude='.git' ~/dotfiles/ ~/.dotfiles/   # exclude the top-level .git too...
+cd ~/.dotfiles
+bash install.sh --clean-nested-git
+```
+
+If a nested `.git` is detected and you did not pass `--clean-nested-git`, the installer prints a warning and continues without deleting anything.
+
+---
+
+# Step 4: Post Installation
+
+## Verify Neovim
+
+The installer already runs the Neovim build for you (`+LazySync` + `+TSUpdateSync`), so plugins and Tree-sitter grammars are installed before it finishes. A first launch is only needed to confirm everything looks right:
 
 ```bash
 nvim
 ```
 
-On the first launch:
+On first interactive launch the theme and LSP tools load. If anything failed during the automated build, open Neovim and run:
 
-- Lazy.nvim installs automatically
-- All plugins are downloaded
-- Tree-sitter parsers are compiled
-- The configured theme and LSP tools are loaded
-
-Wait until installation reaches **100%**.
-
-Exit Neovim:
-
-```
-:q
+```vim
+:Lazy sync
+:TSUpdate
 ```
 
-Open it again:
-
-```bash
-nvim
-```
-
-Your full development environment should now be ready.
+or simply reopen Neovim — your full development environment should now be ready.
 
 ---
 
 ## Make Zsh Your Default Shell (Optional)
 
-To automatically start your customized Zsh configuration:
+To automatically start your customized Zsh configuration, either run the installer with `--set-zsh`, or do it manually:
 
 ```bash
 chsh -s $(which zsh)
@@ -189,6 +218,18 @@ or
 ```vim
 :Lazy update
 ```
+
+---
+
+## "Nested .git directory detected" warning
+
+If the installer prints a warning about a nested `.git` (e.g. `nvim/.git`), it means the repo was copied with `cp`/`rsync`/`tar` and carried a nested git repository. The installer does **not** delete anything automatically. To fix it, re-run from the copied checkout with:
+
+```bash
+bash install.sh --clean-nested-git
+```
+
+Only run this on the copied target, never on the original machine. A `git clone` never triggers this because clones exclude nested `.git` directories.
 
 ---
 
