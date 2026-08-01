@@ -1,180 +1,89 @@
-# Dotfiles + System Setup
+# Dotfiles
 
-This repository is a portable Ubuntu-first workstation bootstrap for shell, terminal, editor, Git, SSH, tmux, VS Code, and package state. It is designed to recreate a development environment on a new machine with minimal manual work while keeping secrets out of version control.
+This repository now keeps the important configuration files only. The shell installer and bootstrap scripts were removed so setup is fully manual and nothing in the repo will overwrite your config data automatically.
 
-## Repository Structure
+## What is kept here
 
-```text
-dotfiles/
-├── bootstrap.sh
-├── install.sh
-├── README.md
-├── .gitignore
-├── bash/
-├── cp/
-├── git/
-├── kitty/
-├── nvim/
-├── packages/
-├── scripts/
-├── ssh/
-├── tmux/
-├── vscode/
-└── zsh/
-```
-
-## What Each Area Does
-
-- `bash/`: Bash login and interactive shell configuration.
-- `zsh/`: Portable Zsh configuration for future migration or WSL.
-- `git/`: Git defaults, aliases, editor settings, and identity fields.
-- `kitty/`: Kitty terminal configuration and theme fragments.
-- `nvim/`: Full Neovim configuration and plugin setup.
-- `tmux/`: tmux behavior, keybindings, and pane defaults.
-- `ssh/`: Tracked example only; never commit private keys.
-- `vscode/`: Extension inventory used during restore.
-- `cp/`: Competitive programming helper scripts and templates.
+- `bash/`: Bash login and interactive shell config.
+- `git/`: Git defaults and identity settings.
+- `kitty/`: Kitty terminal configuration.
+- `nvim/`: Neovim configuration.
+- `tmux/`: tmux configuration.
+- `vscode/`: VS Code extension list.
+- `zsh/`: Zsh configuration.
+- `cp/`: Competitive programming template files.
 - `packages/`: Package manifests for APT, Snap, and Flatpak.
-- `scripts/`: Backup, restore, bootstrap, and shared shell helpers.
+- `ssh/config.example`: Example SSH config only, not private keys.
 
-## Core Commands
+## Fresh Device Setup
 
-### Fresh local install after cloning
+1. Install the basic tools you need for manual setup.
 
 ```bash
+sudo apt update
+sudo apt install -y git curl ca-certificates build-essential software-properties-common
+```
+
+2. Clone the repository.
+
+```bash
+git clone https://github.com/MehediXT/Mydotfiles.git ~/.dotfiles
 cd ~/.dotfiles
-bash install.sh
 ```
 
-Install VS Code separately if you want the extension restore step to run.
-
-### Backup the current machine
+3. Create the target directories.
 
 ```bash
-bash scripts/backup.sh
+mkdir -p ~/.config ~/.local/bin ~/.ssh
 ```
 
-### Restore the tracked setup
+4. Link the tracked config files into place. If a file already exists on your machine, back it up first instead of deleting it.
 
 ```bash
-bash scripts/restore.sh
+ln -sfn ~/.dotfiles/bash/.bashrc ~/.bashrc
+ln -sfn ~/.dotfiles/bash/.profile ~/.profile
+ln -sfn ~/.dotfiles/git/.gitconfig ~/.gitconfig
+ln -sfn ~/.dotfiles/kitty ~/.config/kitty
+ln -sfn ~/.dotfiles/nvim ~/.config/nvim
+ln -sfn ~/.dotfiles/tmux/.tmux.conf ~/.tmux.conf
+ln -sfn ~/.dotfiles/zsh/.zshrc ~/.zshrc
+ln -sfn ~/.dotfiles/zsh/.zprofile ~/.zprofile
 ```
 
-### Restore from a snapshot
+5. Install the packages you want from the manifests.
 
 ```bash
-bash scripts/restore.sh --snapshot /path/to/snapshot
+grep -vE '^[[:space:]]*#|^[[:space:]]*$' packages/apt.txt | xargs sudo apt install -y
+grep -vE '^[[:space:]]*#|^[[:space:]]*$' packages/snap.txt | xargs -r -n1 sudo snap install
+grep -vE '^[[:space:]]*#|^[[:space:]]*$' packages/flatpak.txt | xargs -r -n1 flatpak install -y flathub
 ```
 
-## Bootstrap Flow
-
-`install.sh` is a compatibility wrapper that forwards to `bootstrap.sh`.
-
-`bootstrap.sh` is the top-level entrypoint for a fresh machine. It delegates to `scripts/bootstrap.sh`, which in turn runs the restore flow. In normal use, clone the repository first and then run `bash install.sh`.
-
-## Backup Behavior
-
-The backup script captures machine-specific state into timestamped snapshots under `backups/<host>/<timestamp>/`.
-
-Included:
-
-- Bash, Zsh, Git, Kitty, Neovim, tmux, and VS Code user config.
-- SSH public configuration and host metadata.
-- APT, Snap, and Flatpak package inventories.
-- VS Code extension lists.
-
-Excluded:
-
-- Private SSH keys.
-- Passwords, tokens, or API secrets.
-- Local override files such as `~/.bashrc_local` and `~/.zshrc_local`.
-
-## Restore Behavior
-
-Restore does four things in order:
-
-1. Installs packages from `packages/apt.txt`, `packages/snap.txt`, and `packages/flatpak.txt`.
-2. Symlinks the tracked configuration roots into `$HOME`.
-3. Restores snapshot-specific files if a snapshot is supplied.
-4. Reinstalls VS Code extensions when a VS Code binary is available.
-
-## Security Rules
-
-- Never commit private SSH keys.
-- Never commit secrets, tokens, or machine-specific credentials.
-- Keep secrets in local override files ignored by Git.
-- Review `git status` before pushing.
-- Keep SSH config as `ssh/config.example` in Git; use your local `~/.ssh/config` for the real file.
-
-## Package Strategy
-
-- `packages/apt.txt` is the Ubuntu/Debian baseline.
-- `packages/snap.txt` is for Snap packages you explicitly want.
-- `packages/flatpak.txt` is for desktop apps that are easier to manage through Flatpak.
-
-To add a dependency:
-
-1. Install it locally.
-2. Add it to the correct manifest.
-3. Run `bash scripts/restore.sh` in a clean environment and verify the result.
-
-## Maintenance Workflow
-
-A practical routine is:
+6. Restore your VS Code extensions if you use VS Code.
 
 ```bash
-git status
-git diff
-bash scripts/backup.sh
-bash scripts/restore.sh
+grep -vE '^[[:space:]]*#|^[[:space:]]*$' vscode/extensions.txt | xargs -r -n1 code --install-extension
 ```
 
-Use `backup.sh` before major config changes or before moving to a new machine. Use `restore.sh` to validate that the repo still recreates your environment correctly.
-
-## Future Migration
-
-The layout is intended to stay useful for:
-
-- Another Ubuntu machine: direct fit.
-- WSL: shell, Git, Neovim, tmux, and VS Code state remain reusable.
-- Another Linux distribution: the structure stays the same, while package manifests may need translation.
-
-## File Notes
-
-### `bash/.bashrc` and `bash/.profile`
-Shell startup files with PATH setup, aliases, and a local override hook.
-
-### `git/.gitconfig`
-Tracked Git defaults. Update the `user` section before committing as yourself.
-
-### `nvim/`
-Full Neovim config. The restore flow symlinks the directory into `~/.config/nvim`.
-
-### `kitty/`
-Terminal configuration, including theme includes.
-
-### `tmux/.tmux.conf`
-tmux keybindings and default behavior.
-
-### `vscode/extensions.txt`
-Curated extension list used by restore.
-
-### `cp/`
-Competitive programming template and launcher script.
-
-## Useful Commands
+7. Copy your personal SSH config locally if needed.
 
 ```bash
-# Create a new CP file
-cpnew solution.cpp
-
-# Inspect VS Code extensions
-code --list-extensions
-
-# Regenerate a backup snapshot
-bash scripts/backup.sh
+cp ssh/config.example ~/.ssh/config
+chmod 600 ~/.ssh/config
 ```
 
 ## Notes
 
-This repository treats tracked configuration and machine-specific state separately. If something is unique to one host, keep it in the snapshot layer or in ignored local override files.
+- Do not store private SSH keys in this repository.
+- Keep machine-specific secrets in your local home directory, not in Git.
+- If you copy this repo to another machine, link the files again there instead of running any removed script.
+
+## Common Paths
+
+- `~/.bashrc` -> `bash/.bashrc`
+- `~/.profile` -> `bash/.profile`
+- `~/.gitconfig` -> `git/.gitconfig`
+- `~/.config/kitty` -> `kitty/`
+- `~/.config/nvim` -> `nvim/`
+- `~/.tmux.conf` -> `tmux/.tmux.conf`
+- `~/.zshrc` -> `zsh/.zshrc`
+- `~/.zprofile` -> `zsh/.zprofile`

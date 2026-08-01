@@ -13,7 +13,7 @@ jq
 kitty
 libssl-dev
 make
-neovim
+nvim --classic
 nodejs
 npm
 pkg-config
