@@ -51,9 +51,19 @@ vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI", "BufEnter", "Diagnost
 -- Filetype AutoCMDs
 --
 -- C AutoCMDs
+-- vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+--   pattern = { "*.c", "*.h" },
+--   command = "set filetype=c",
+-- })
+
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-  pattern = { "*.c", "*.h" },
+  pattern = "*.c",
   command = "set filetype=c",
+})
+
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  pattern = "*.h",
+  command = "set filetype=cpp",
 })
 
 vim.api.nvim_create_autocmd("BufEnter", { -- Load CP template
