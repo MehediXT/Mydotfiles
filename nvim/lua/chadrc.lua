@@ -80,7 +80,9 @@ local options = {
       " █▄█ ▄ █▄▄█▄▄█ █ ▄▄█ █ ▄ █ █▄█▄█ █ ",
       "     █▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█ █▄█▄▄▄█     ",
       "                                   ",
+
     },
+
 
     buttons = {
       { txt = " ", hl = "NvDashButtons", no_gap = true, rep = true },

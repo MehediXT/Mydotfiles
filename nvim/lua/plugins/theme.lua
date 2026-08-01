@@ -58,6 +58,21 @@ return {
             -- Variables
             ["@variable.cpp"] = { fg = colors.text },
             ["@variable.parameter.cpp"] = { fg = colors.maroon, italic = true },
+
+            -- Python
+            ["@keyword.python"] = { fg = colors.mauve, italic = true, bold = true },
+            ["@keyword.return.python"] = { fg = colors.red, bold = true },
+            ["@keyword.function.python"] = { fg = colors.blue, italic = true },
+            ["@keyword.conditional.python"] = { fg = colors.pink, italic = true },
+            ["@type.builtin.python"] = { fg = colors.peach, bold = true },
+            ["@function.python"] = { fg = colors.green, bold = true },
+            ["@function.call.python"] = { fg = colors.teal },
+            ["@module.python"] = { fg = colors.sky, bold = true },
+            ["@constant.builtin.python"] = { fg = colors.peach },
+            ["@string.python"] = { fg = colors.green },
+            ["@number.python"] = { fg = colors.peach },
+            ["@variable.python"] = { fg = colors.text },
+            ["@variable.parameter.python"] = { fg = colors.maroon, italic = true },
           }
         end,
       })

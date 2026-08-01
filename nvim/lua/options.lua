@@ -25,6 +25,10 @@ for k, v in pairs(options) do
   vim.opt[k] = v
 end
 
+vim.g.python_highlight_all = 1
+vim.cmd "syntax on"
+vim.cmd "filetype plugin indent on"
+
 vim.opt.listchars:append { tab = "│ ", trail = "" }
 
 vim.api.nvim_create_augroup("SetTextWidth", { clear = true })
