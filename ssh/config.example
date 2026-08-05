@@ -1,5 +1,3 @@
-# Example SSH config for Git hosting and development hosts.
-# Copy this file to ~/.ssh/config and customize host aliases.
 
 Host github.com
     HostName github.com
