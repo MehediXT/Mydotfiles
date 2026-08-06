@@ -115,5 +115,7 @@ local options = {
   },
 }
 
-local status, chadrc = pcall(require, "chadrc")
-return vim.tbl_deep_extend("force", options, status and chadrc or {})
+-- Requiring "chadrc" from inside chadrc.lua recursively loads this same module.
+-- local status, chadrc = pcall(require, "chadrc")
+-- return vim.tbl_deep_extend("force", options, status and chadrc or {})
+return options

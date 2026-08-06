@@ -1,83 +1,90 @@
 # Dotfiles
 
-This repository now keeps the important configuration files only. The shell installer and bootstrap scripts were removed so setup is fully manual and nothing in the repo will overwrite your config data automatically.
+Portable Bash, Zsh, Git, Kitty, tmux, Neovim, competitive-programming, and
+editor configuration with a one-command installer for Ubuntu and Debian Linux.
 
-## What is kept here
+## Supported systems
 
-- `bash/`: Bash login and interactive shell config.
-- `git/`: Git defaults and identity settings.
-- `kitty/`: Kitty terminal configuration.
-- `nvim/`: Neovim configuration.
-- `tmux/`: tmux configuration.
-- `vscode/`: VS Code extension list.
-- `zsh/`: Zsh configuration.
-- `cp/`: Competitive programming template files.
-- `packages/`: Package manifests for APT, Snap, and Flatpak.
-- `ssh/config.example`: Example SSH config only, not private keys.
+The automatic package installation supports Ubuntu, Debian, and distributions
+that use `apt-get`. The config-linking part works on other Linux distributions
+with `./install.sh --no-packages` after the required programs are installed.
 
-## Fresh Device Setup
+## Quick installation
 
-1. Install the basic tools you need for manual setup.
+### From a downloaded ZIP or copied folder
+
+Extract the complete folder and move it to a permanent location. The installed
+configs are symbolic links, so deleting or moving the folder afterward will
+break those links.
 
 ```bash
-sudo apt update
-sudo apt install -y git curl ca-certificates build-essential software-properties-common
+mv ~/Downloads/Mydotfiles-main ~/.dotfiles
+cd ~/.dotfiles
+chmod +x install.sh
+./install.sh
 ```
 
-2. Clone the repository.
+Adjust the first command if the extracted folder has a different name or is in
+a different location.
+
+### From Git
 
 ```bash
 git clone https://github.com/MehediXT/Mydotfiles.git ~/.dotfiles
 cd ~/.dotfiles
+./install.sh
 ```
 
-3. Create the target directories.
+Run the installer as your normal user, not with `sudo`. It requests `sudo` only
+when installing system packages.
+
+## What the installer does
+
+The installer:
+
+- installs the packages in `packages/`;
+- installs a modern Neovim from Snap because this NvChad config requires
+  Neovim 0.11 or newer;
+- installs and verifies Deno and JetBrainsMono Nerd Font downloads;
+- links every tracked shell/editor config to the correct home-directory path;
+- restores VS Code extensions when the `code` command is available; and
+- restores the pinned Neovim plugins on the first run.
+
+It does not install VS Code, Ollama, SSH private keys, or private credentials.
+
+## Installer options
+
+Run `./install.sh --help` to see every option.
+
+| Option | Purpose |
+| --- | --- |
+| `--dry-run` | Preview commands without changing the machine |
+| `--no-packages` | Skip APT, Snap, and Flatpak installation |
+| `--no-extras` | Skip Deno and Nerd Font installation |
+| `--no-neovim-sync` | Skip the initial Neovim plugin restore |
+| `--no-vscode` | Skip VS Code extension restoration |
+| `--change-shell` | Make Zsh the login shell |
+
+Examples:
 
 ```bash
-mkdir -p ~/.config ~/.local/bin ~/.ssh
+# Preview everything without changing the machine
+./install.sh --dry-run
+
+# Install only the config links (no package downloads)
+./install.sh --no-packages --no-extras --no-neovim-sync
+
+# Also make Zsh the login shell
+./install.sh --no-packages --no-extras --no-neovim-sync --change-shell
 ```
 
-4. Link the tracked config files into place. If a file already exists on your machine, back it up first instead of deleting it.
+## Existing files and repeat runs
 
-```bash
-ln -sfn ~/.dotfiles/bash/.bashrc ~/.bashrc
-ln -sfn ~/.dotfiles/bash/.profile ~/.profile
-ln -sfn ~/.dotfiles/git/.gitconfig ~/.gitconfig
-ln -sfn ~/.dotfiles/kitty ~/.config/kitty
-ln -sfn ~/.dotfiles/nvim ~/.config/nvim
-ln -sfn ~/.dotfiles/tmux/.tmux.conf ~/.tmux.conf
-ln -sfn ~/.dotfiles/zsh/.zshrc ~/.zshrc
-ln -sfn ~/.dotfiles/zsh/.zprofile ~/.zprofile
-```
+The installer is idempotent: links that already point to this folder are left
+alone. Conflicting files or directories are moved to a timestamped folder under
+`~/.dotfiles-backup/`; they are never deleted.
 
-5. Install the packages you want from the manifests.
-
-```bash
-grep -vE '^[[:space:]]*#|^[[:space:]]*$' packages/apt.txt | xargs sudo apt install -y
-grep -vE '^[[:space:]]*#|^[[:space:]]*$' packages/snap.txt | xargs -r -n1 sudo snap install
-grep -vE '^[[:space:]]*#|^[[:space:]]*$' packages/flatpak.txt | xargs -r -n1 flatpak install -y flathub
-```
-
-6. Restore your VS Code extensions if you use VS Code.
-
-```bash
-grep -vE '^[[:space:]]*#|^[[:space:]]*$' vscode/extensions.txt | xargs -r -n1 code --install-extension
-```
-
-7. Copy your personal SSH config locally if needed.
-
-```bash
-cp ssh/config.example ~/.ssh/config
-chmod 600 ~/.ssh/config
-```
-
-## Notes
-
-- Do not store private SSH keys in this repository.
-- Keep machine-specific secrets in your local home directory, not in Git.
-- If you copy this repo to another machine, link the files again there instead of running any removed script.
-
-## Common Paths
+These links are created:
 
 - `~/.bashrc` -> `bash/.bashrc`
 - `~/.profile` -> `bash/.profile`
@@ -87,3 +94,53 @@ chmod 600 ~/.ssh/config
 - `~/.tmux.conf` -> `tmux/.tmux.conf`
 - `~/.zshrc` -> `zsh/.zshrc`
 - `~/.zprofile` -> `zsh/.zprofile`
+
+Machine-specific Git settings can go in `~/.gitconfig_local`. Bash and Zsh
+machine-specific settings can go in `~/.bashrc_local`, `~/.zshrc.local`, and
+`~/.zprofile.local`.
+
+## After installation
+
+Open a new terminal, then verify the main tools:
+
+```bash
+nvim --version
+deno --version
+git config --global --get user.name
+git config --global --get user.email
+```
+
+If you selected `--change-shell`, log out and sign back in before checking the
+new login shell with `printf '%s\n' "$SHELL"`.
+
+## Authentication and private data
+
+No private keys, access tokens, API keys, or passwords are stored or copied by
+this repository. That is intentional. On a fresh machine you still need to:
+
+1. Generate or securely restore your SSH key, then optionally copy
+   `ssh/config.example` to `~/.ssh/config` and run `chmod 600 ~/.ssh/config`.
+2. Add the public key to GitHub and test it with `ssh -T git@github.com`.
+3. Sign in to GitHub Copilot from Neovim if you use it.
+4. Configure Ollama and its `qwen2.5:latest` model if you use CodeCompanion.
+
+Never commit private SSH keys or machine-specific secrets to this repository.
+
+## Updating and recovery
+
+When this folder is a Git clone, update it with `git pull` from inside the
+folder. Because the installed configs are symbolic links, tracked config
+updates take effect immediately.
+
+If an old config was replaced during installation, recover it from the newest
+timestamped directory under `~/.dotfiles-backup/`.
+
+## Repository contents
+
+- `bash/`, `zsh/`: interactive and login-shell configuration
+- `git/`: Git identity and defaults
+- `kitty/`, `tmux/`, `nvim/`: terminal and editor configuration
+- `cp/`: competitive-programming template
+- `packages/`: APT, Snap, and Flatpak manifests
+- `vscode/`: VS Code extension manifest
+- `ssh/config.example`: non-secret example only

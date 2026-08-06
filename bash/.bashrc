@@ -80,6 +80,8 @@ export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_CACHE_HOME="$HOME/.cache"
 
-alias sodiku="python3 ~/AI-model/files/sodiku.py 2>/dev/null"
+if [ -f "$HOME/AI-model/files/sodiku.py" ]; then
+    alias sodiku="python3 '$HOME/AI-model/files/sodiku.py' 2>/dev/null"
+fi
 
 [ -f "$HOME/.bashrc_local" ] && . "$HOME/.bashrc_local"

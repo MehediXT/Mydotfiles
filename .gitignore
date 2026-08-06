@@ -1,5 +1,5 @@
 # Dotfiles .gitignore
-
+.agents
 # OS and editor
 .DS_Store
 .vscode/

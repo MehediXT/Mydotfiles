@@ -3,7 +3,7 @@ return function(_, opts)
   opts.ensure_installed = opts.ensure_installed or {}
   opts.auto_install = true
 
-  vim.list_extend(opts.ensure_installed, {
+  local parsers = {
     "c",
     "cpp",
     "python",
@@ -11,7 +11,15 @@ return function(_, opts)
     "vim",
     "vimdoc",
     "markdown",
-  })
+  }
+
+  -- NvChad already requests a few parsers. Avoid duplicate installation jobs
+  -- while extending its list with the languages used by this config.
+  for _, parser in ipairs(parsers) do
+    if not vim.tbl_contains(opts.ensure_installed, parser) then
+      table.insert(opts.ensure_installed, parser)
+    end
+  end
 
   opts.highlight = vim.tbl_deep_extend("force", { enable = true }, opts.highlight or {})
   opts.highlight.additional_vim_regex_highlighting = { "python" }

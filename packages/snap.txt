@@ -1,2 +1,3 @@
 # Package name|flags
 # Example: code|classic
+nvim|classic

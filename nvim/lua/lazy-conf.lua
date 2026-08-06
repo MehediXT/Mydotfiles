@@ -15,6 +15,8 @@ return {
 
 	performance = {
 		rtp = {
+			-- Keep "syntax" and "ftplugin" enabled. Python uses regex syntax as
+			-- a fallback while a missing Treesitter parser is being installed.
 			disabled_plugins = {
 				"2html_plugin",
 				"getscript",
@@ -39,7 +41,7 @@ return {
 				"synmenu",
 				"optwin",
 				"compiler",
-					"bugreport",
+				"bugreport",
 			},
 		},
 	},

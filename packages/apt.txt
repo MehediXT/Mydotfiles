@@ -6,6 +6,8 @@ curl
 dconf-cli
 fd-find
 flatpak
+fontconfig
+fonts-jetbrains-mono
 fzf
 git
 gnupg
@@ -13,7 +15,7 @@ jq
 kitty
 libssl-dev
 make
-nvim --classic
+ninja-build
 nodejs
 npm
 pkg-config
@@ -26,9 +28,12 @@ shellcheck
 shfmt
 snapd
 software-properties-common
+tcc
+time
 tmux
 tree
 unzip
 wget
 xclip
 zsh
+xz-utils

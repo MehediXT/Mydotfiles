@@ -14,12 +14,14 @@ local options = {
   wrap = false,
   list = true,
   spell = true,
-  spellfile = "~/.config/nvim/spell/en.utf-8.add",
+  spellfile = vim.fn.stdpath "data" .. "/site/spell/en.utf-8.add",
   scrolloff = 16,
   sidescrolloff = 8,
   -- signcolumn = "yes:2",
   foldmethod = "marker",
 }
+
+vim.fn.mkdir(vim.fn.stdpath "data" .. "/site/spell", "p")
 
 for k, v in pairs(options) do
   vim.opt[k] = v

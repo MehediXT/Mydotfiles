@@ -6,6 +6,17 @@
 vim.api.nvim_create_augroup("compile", { clear = true })
 vim.api.nvim_create_augroup("cp", { clear = true })
 
+-- NvChad's current TSInstallAll command targets the rewritten Treesitter API.
+-- This config intentionally uses the Neovim 0.11-compatible legacy branch.
+pcall(vim.api.nvim_del_user_command, "TSInstallAll")
+vim.api.nvim_create_user_command("TSInstallAll", function()
+  local spec = require("lazy.core.config").plugins["nvim-treesitter"]
+  local opts = require("lazy.core.plugin").values(spec, "opts", false)
+
+  require("lazy").load { plugins = { "nvim-treesitter" } }
+  require("nvim-treesitter.install").ensure_installed(opts.ensure_installed or {})
+end, { desc = "Install all configured Treesitter parsers" })
+
 -- General AutoCMDs
 vim.cmd [[
 " Remember cursor position between sessions
@@ -70,12 +81,20 @@ vim.api.nvim_create_autocmd("BufEnter", { -- Load CP template
   pattern = "*/cp/*.cpp",
   group = "cp",
   callback = function()
-    vim.api.nvim_set_keymap(
-      "n",
-      "<F8>",
-      ":0read ~/.vim/snippets/cp/cpp_template.cpp<CR>/void sol() {<CR>:nohl<CR>o",
-      { noremap = true, silent = true }
-    )
+    vim.keymap.set("n", "<F8>", function()
+      local config_dir = vim.uv.fs_realpath(vim.fn.stdpath "config") or vim.fn.stdpath "config"
+      local template = vim.fs.dirname(config_dir) .. "/cp/template.cpp"
+
+      if vim.fn.filereadable(template) == 0 then
+        vim.notify("CP template not found: " .. template, vim.log.levels.ERROR)
+        return
+      end
+
+      vim.cmd("0read " .. vim.fn.fnameescape(template))
+      vim.fn.search([[void solve() {]], "w")
+      vim.cmd "nohlsearch"
+      vim.cmd "normal! o"
+    end, { buffer = true, silent = true, desc = "Insert CP template" })
   end,
 })
 

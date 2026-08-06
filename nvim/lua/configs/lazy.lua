@@ -35,12 +35,14 @@ return {
         "zipPlugin",
         "tutor",
         "rplugin",
-        "syntax",
+        -- Keep legacy syntax available as a fallback when a parser is missing.
+        -- "syntax",
         "synmenu",
         "optwin",
         "compiler",
         "bugreport",
-        "ftplugin",
+        -- Filetype plugins are required for language-specific behavior.
+        -- "ftplugin",
       },
     },
   },

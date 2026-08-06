@@ -1,6 +1,6 @@
 
 Host github.com
-    HostName github.com
+    MehediXT github.com
     User git
     IdentitiesOnly yes
     AddKeysToAgent yes

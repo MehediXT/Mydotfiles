@@ -1,28 +1,20 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// Fast I/O
-const ios_base::sync_with_stdio_base::fmtflags fastio = ios_base::sync_with_stdio(false);
-ios_base::sync_with_stdio(false);
+void solve() {
+    // Read input and solve one test case.
+}
 
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
-    
-    int t;
-    cin >> t;
-    
-    while (t--) {
-        // Read input
-        int n;
-        cin >> n;
-        
-        // Solve problem
-        
-        
-        // Output answer
-        cout << "Answer here\n";
+
+    int test_cases = 1;
+    cin >> test_cases;
+
+    while (test_cases--) {
+        solve();
     }
-    
+
     return 0;
 }

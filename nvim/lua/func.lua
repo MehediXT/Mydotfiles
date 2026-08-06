@@ -9,7 +9,11 @@ function Compile()
 	local command
 	local interpreted = false
 	local time = "/usr/bin/time -f '\ntook: %es'"
-	local interpreted_langs = { "c", "python", "lua", "cpp", "java"}
+	-- C++ and Java require a compile step; treating them as interpreted left
+	-- `command` nil and made F5 crash while concatenating the timing command.
+	-- local interpreted_langs = { "c", "python", "lua", "cpp", "java" }
+	local interpreted_langs = { "c", "python", "lua" }
+	local escaped_filename = vim.fn.shellescape(filename)
 
 	for _, v in ipairs(interpreted_langs) do
 		if v == filetype then
@@ -20,13 +24,28 @@ function Compile()
 
 	-- Define commands based on file type
 	if filetype == "rmd" then
-		command = "Rscript -e \"rmarkdown::render('" .. filename .. "', output_format = 'pdf_document')\""
+		local r_filename = filename:gsub("\\", "\\\\"):gsub("'", "\\'")
+		command = "Rscript -e \"rmarkdown::render('" .. r_filename .. "', output_format = 'pdf_document')\""
 	elseif filetype == "c" then
-		command = "tcc -run" .. " " .. filename
+		command = "tcc -run " .. escaped_filename
+	elseif filetype == "cpp" then
+		local output = vim.fn.tempname()
+		command = "g++ -std=c++17 " .. escaped_filename .. " -o " .. vim.fn.shellescape(output)
+			.. " && " .. vim.fn.shellescape(output)
+	elseif filetype == "java" then
+		local directory = vim.fn.expand("%:p:h")
+		local class_name = vim.fn.expand("%:t:r")
+		command = "javac " .. escaped_filename .. " && java -cp " .. vim.fn.shellescape(directory)
+			.. " " .. vim.fn.shellescape(class_name)
 	elseif filetype == "python" then
-		command = "python3" .. " " .. filename
+		command = "python3 " .. escaped_filename
 	elseif filetype == "lua" then
-		command = "lua" .. " " .. filename
+		command = "lua " .. escaped_filename
+	end
+
+	if not command then
+		vim.notify("No compile command configured for filetype: " .. filetype, vim.log.levels.WARN)
+		return
 	end
 
 	if interpreted == true then

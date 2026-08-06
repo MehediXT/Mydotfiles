@@ -2,12 +2,19 @@ local Path = require("plenary.path")
 
 -- helper function to check for a .cformat file up the directory tree
 local function has_cformat_file(bufnr)
-	local dir = vim.fn.expand("%:p:h") -- current file directory
-	while dir ~= "/" do
+	local filename = vim.api.nvim_buf_get_name(bufnr)
+	local dir = filename ~= "" and vim.fn.fnamemodify(filename, ":p:h") or vim.uv.cwd()
+
+	while dir do
 		if Path:new(dir, ".cformat"):exists() then
 			return true
 		end
-		dir = Path:new(dir):parent().filename
+
+		local parent = Path:new(dir):parent().filename
+		if parent == dir then
+			break
+		end
+		dir = parent
 	end
 	return false
 end

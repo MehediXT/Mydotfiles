@@ -71,7 +71,7 @@ return {
             ["@constant.builtin.python"] = { fg = colors.peach },
             ["@string.python"] = { fg = colors.green },
             ["@number.python"] = { fg = colors.peach },
-            ["@variable.python"] = { fg = colors.text },
+            ["@variable.python"] = { fg = colors.lavender },
             ["@variable.parameter.python"] = { fg = colors.maroon, italic = true },
           }
         end,
