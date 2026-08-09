@@ -31,6 +31,7 @@ return {
     local servers = {
       "html",
       "cssls",
+      "ts_ls",
       "clangd",
       "lua_ls",
       "biome",

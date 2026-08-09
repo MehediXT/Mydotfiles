@@ -6,6 +6,13 @@ return function(_, opts)
   local parsers = {
     "c",
     "cpp",
+    -- Web stack: JavaScript parses .js and .jsx; TSX parses React TypeScript.
+    "html",
+    "css",
+    "javascript",
+    "jsdoc",
+    "typescript",
+    "tsx",
     "python",
     "lua",
     "vim",

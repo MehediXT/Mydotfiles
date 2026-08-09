@@ -100,6 +100,7 @@ local options = {
     pkgs = {
       "autoflake",
       "black",
+      "biome",
       "clangd",
       "css-lsp",
       "goimports",
@@ -111,6 +112,7 @@ local options = {
       "prettier",
       "python-lsp-server",
       "stylua",
+      "typescript-language-server",
     },
   },
 }
