@@ -47,8 +47,15 @@ The installer:
   Neovim 0.11 or newer;
 - installs and verifies Deno and JetBrainsMono Nerd Font downloads;
 - links every tracked shell/editor config to the correct home-directory path;
-- restores VS Code extensions when the `code` command is available; and
-- restores the pinned Neovim plugins on the first run.
+- restores VS Code settings, keybindings, and extensions when the `code`
+  command is available;
+- configures Caps Lock as Escape on GNOME desktops; and
+- restores the pinned Neovim plugins and installs the configured Python/Django
+  language tools on the first run.
+
+The Neovim synchronization uses explicit XDG paths under the target home
+directory. This prevents Snap applications such as VS Code from redirecting
+Neovim into a second plugin installation under `~/snap/`.
 
 It does not install VS Code, Ollama, SSH private keys, or private credentials.
 
@@ -61,8 +68,9 @@ Run `./install.sh --help` to see every option.
 | `--dry-run` | Preview commands without changing the machine |
 | `--no-packages` | Skip APT, Snap, and Flatpak installation |
 | `--no-extras` | Skip Deno and Nerd Font installation |
-| `--no-neovim-sync` | Skip the initial Neovim plugin restore |
+| `--no-neovim-sync` | Skip Neovim plugin and Mason tool synchronization |
 | `--no-vscode` | Skip VS Code extension restoration |
+| `--no-keyboard` | Skip configuring Caps Lock as Escape |
 | `--change-shell` | Make Zsh the login shell |
 
 Examples:
@@ -99,6 +107,46 @@ Machine-specific Git settings can go in `~/.gitconfig_local`. Bash and Zsh
 machine-specific settings can go in `~/.bashrc_local`, `~/.zshrc.local`, and
 `~/.zprofile.local`.
 
+## Python and Django in Neovim
+
+The Neovim configuration provides:
+
+- Ruff import organization followed by formatting whenever a Python buffer is
+  written with `:w`;
+- djLint formatting for Django templates detected as `htmldjango`;
+- BasedPyright completion and type checking with automatic `.venv`, `venv`, or
+  `env` interpreter detection;
+- Ruff diagnostics and code actions;
+- targeted filtering of BasedPyright false positives for Django's dynamically
+  generated model attributes, without weakening diagnostics in non-Django
+  Python projects;
+- a Django-only Ruff exception for declarative metadata in conventional
+  framework modules, while retaining normal Ruff behavior in other projects;
+- Django template and HTML language-server support; and
+- Python and Django Treesitter highlighting.
+
+Format-on-save is deliberately limited to Python and Django templates. It does
+not change the C/C++ competitive-programming save behavior.
+
+The installer restores the plugins and then runs Mason synchronously. It
+verifies that `ruff`, `basedpyright-langserver`, `djlsp`, and `djlint` were
+installed before reporting success. On later Neovim starts, the configured
+Mason tool installer also repairs missing tools automatically.
+
+The installer also performs save smoke tests: an intentionally unformatted
+Python file must be organized and formatted by `:w`, while an intentionally
+unformatted C++ file must remain byte-for-byte unchanged.
+
+Useful Neovim commands:
+
+| Command | Purpose |
+| --- | --- |
+| `:ConformInfo` | Show the formatter selected for the current buffer |
+| `:LspInfo` | Show attached language servers |
+| `:FormatDisable` | Disable format-on-save for the current buffer |
+| `:FormatDisable!` | Disable format-on-save for the current session |
+| `:FormatEnable` | Re-enable format-on-save |
+
 ## After installation
 
 Open a new terminal, then verify the main tools:
@@ -108,6 +156,47 @@ nvim --version
 deno --version
 git config --global --get user.name
 git config --global --get user.email
+nvim --headless -i NONE \
+  '+lua print(vim.fn.stdpath("data")); print(vim.fn.exepath("ruff"))' \
+  '+qa!'
+```
+
+The final command should show `~/.local/share/nvim` and a Ruff executable under
+`~/.local/share/nvim/mason/bin/`.
+
+If Neovim was already open during installation, close every Neovim process and
+start it again. An existing process cannot reload a changed XDG data directory.
+If a VS Code integrated terminal still contains the old Snap path, reload the
+shell first:
+
+```bash
+source ~/.zshrc
+```
+
+Inside Neovim, this command should then report the normal data directory:
+
+```vim
+:lua print(vim.fn.stdpath("data"))
+```
+
+If a language tool is ever missing, repair the declared Mason tools with:
+
+```bash
+nvim --headless -i NONE '+MasonToolsInstallSync' '+qa!'
+```
+
+## Caps Lock as Escape in VSCodeVim
+
+The installer includes the `vscodevim.vim` extension and configures GNOME so
+Caps Lock sends Escape. Existing `caps:escape` or `caps:swapescape` settings are
+preserved. VS Code is configured with `"keyboard.dispatch": "keyCode"` so it
+honors the Linux XKB remap.
+
+After installation, close every VS Code window and start VS Code again. Check
+the active GNOME mapping with:
+
+```bash
+gsettings get org.gnome.desktop.input-sources xkb-options
 ```
 
 If you selected `--change-shell`, log out and sign back in before checking the

@@ -13,7 +13,7 @@ local options = {
   numberwidth = 4,
   wrap = false,
   list = true,
-  spell = true,
+  spell = false,
   spellfile = vim.fn.stdpath "data" .. "/site/spell/en.utf-8.add",
   scrolloff = 16,
   sidescrolloff = 8,
@@ -39,5 +39,6 @@ vim.api.nvim_create_autocmd("FileType", {
   pattern = { "markdown", "text" },
   callback = function()
     vim.opt_local.textwidth = 80
+    vim.opt_local.spell = true
   end,
 })

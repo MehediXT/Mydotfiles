@@ -27,10 +27,72 @@ local function c_formatter(bufnr)
 	return {}
 end
 
+-- Prefer Ruff for Python because one executable provides fast, project-aware
+-- import organization and formatting. Keep Black + isort as a fallback for
+-- projects that do not have Ruff available. Autoflake and Ruff's broad fix-all
+-- mode are intentionally not run on save because they can remove imports or
+-- make changes beyond formatting.
+-- Previous fallback kept for reference: { "autoflake", "isort", "black" }
+local function python_formatters(bufnr)
+	local conform = require("conform")
+
+	if conform.get_formatter_info("ruff_format", bufnr).available then
+		return { "ruff_organize_imports", "ruff_format" }
+	end
+
+	local formatters = {}
+	if conform.get_formatter_info("isort", bufnr).available then
+		table.insert(formatters, "isort")
+	end
+	if conform.get_formatter_info("black", bufnr).available then
+		table.insert(formatters, "black")
+	end
+
+	return formatters
+end
+
+local autoformat_filetypes = {
+	python = true,
+	htmldjango = true,
+}
+
 return {
 	"stevearc/conform.nvim",
-	event = "VeryLazy",
+	event = { "BufWritePre", "VeryLazy" },
+	cmd = { "ConformInfo" },
+	init = function()
+		vim.api.nvim_create_user_command("FormatDisable", function(args)
+			if args.bang then
+				vim.g.disable_autoformat = true
+			else
+				vim.b.disable_autoformat = true
+			end
+		end, { bang = true, desc = "Disable format on save (use ! for all buffers)" })
+
+		vim.api.nvim_create_user_command("FormatEnable", function()
+			vim.b.disable_autoformat = false
+			vim.g.disable_autoformat = false
+		end, { desc = "Enable format on save" })
+	end,
 	opts = {
+		-- Keep format-on-save scoped to Python and Django templates. In
+		-- particular, this does not change C/C++ competitive-programming files.
+		format_on_save = function(bufnr)
+			if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+				return
+			end
+
+			if not autoformat_filetypes[vim.bo[bufnr].filetype] then
+				return
+			end
+
+			return {
+				timeout_ms = 3000,
+				lsp_format = "fallback",
+			}
+		end,
+		notify_on_error = true,
+
 		formatters_by_ft = {
 			c = c_formatter,
 			cpp = { "clang-format" },
@@ -47,14 +109,8 @@ return {
 			json = { "biome" },
 			lua = { "stylua" },
 			markdown = { "prettier_md" },
-
-			python = function(bufnr)
-				if require("conform").get_formatter_info("ruff_format", bufnr).available then
-					return { "ruff_format", "isort" }
-				else
-					return { "autoflake", "isort", "black" }
-				end
-			end,
+			htmldjango = { "djlint" },
+			python = python_formatters,
 
 			rmd = { "prettier_md" },
 			rust = { "rustfmt", lsp_format = "fallback" },

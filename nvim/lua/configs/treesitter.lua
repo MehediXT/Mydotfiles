@@ -8,6 +8,7 @@ return function(_, opts)
     "cpp",
     -- Web stack: JavaScript parses .js and .jsx; TSX parses React TypeScript.
     "html",
+    "htmldjango",
     "css",
     "javascript",
     "jsdoc",

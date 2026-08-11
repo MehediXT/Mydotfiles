@@ -67,6 +67,7 @@ map("c", "<C-d>", "<Del>", { desc = "Delete character under the cursor" })
 map("c", "<C-z>", "<C-o>u", { desc = "Undo" })
 
 -- Custom Functions
-map("n", "<F5>", ":lua Compile()<CR>", { desc = "Compile current file", noremap = true, silent = true })
+map("n", "<F5>", Compile, { desc = "Compile and run (interactive)", silent = true })
+map("n", "<F6>", "<cmd>CompetiTest run<CR>", { desc = "Run competitive tests", silent = true })
 
 -- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")

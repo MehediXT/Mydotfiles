@@ -5,3 +5,4 @@ esbenp.prettier-vscode
 ms-vscode.cpptools
 ms-vscode.makefile-tools
 redhat.vscode-yaml
+vscodevim.vim

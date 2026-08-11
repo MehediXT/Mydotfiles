@@ -23,6 +23,7 @@ return {
           "$dir/$fileNameWithoutExt",
         },
         c = "cd $dir && gcc $fileName -o /tmp/$fileNameWithoutExt && /tmp/$fileNameWithoutExt",
+        cpp = "cd $dir && g++ -std=gnu++17 -O2 -pipe -Wall -Wextra -Wshadow $fileName -o /tmp/$fileNameWithoutExt && /tmp/$fileNameWithoutExt",
       },
       term = {
         position = "vert",

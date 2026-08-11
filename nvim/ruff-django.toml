@@ -1,0 +1,11 @@
+# Personal Ruff defaults used by Neovim only when a project contains manage.py.
+# Neovim uses this only when the project has no Ruff configuration of its own.
+
+[lint.extend-per-file-ignores]
+# Django and DRF use class attributes as declarative framework metadata. RUF012
+# treats those intentional lists/dictionaries as ordinary mutable defaults.
+"**/admin.py" = ["RUF012"]
+"**/forms.py" = ["RUF012"]
+"**/models.py" = ["RUF012"]
+"**/serializers.py" = ["RUF012"]
+"**/views.py" = ["RUF012"]

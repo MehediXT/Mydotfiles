@@ -11,6 +11,7 @@ INSTALL_PACKAGES=1
 INSTALL_EXTRAS=1
 SYNC_NEOVIM=1
 INSTALL_VSCODE_EXTENSIONS=1
+CONFIGURE_KEYBOARD=1
 CHANGE_SHELL=0
 BACKUP_DIR=""
 TEMP_DIR=""
@@ -25,8 +26,9 @@ Options:
   --dry-run             Show what would change without changing anything
   --no-packages         Skip APT, Snap, and Flatpak package installation
   --no-extras           Skip Deno and JetBrainsMono Nerd Font installation
-  --no-neovim-sync      Skip the initial Lazy.nvim plugin synchronization
+  --no-neovim-sync      Skip Neovim plugin and Mason tool synchronization
   --no-vscode           Skip VS Code extension installation
+  --no-keyboard         Skip configuring Caps Lock as Escape
   --change-shell        Change the current user's login shell to Zsh
   -h, --help            Show this help
 
@@ -86,6 +88,26 @@ trim() {
   value="${value#"${value%%[![:space:]]*}"}"
   value="${value%"${value##*[![:space:]]}"}"
   printf '%s' "$value"
+}
+
+validate_repository() {
+  local relative
+  local -a required_files=(
+    README.md
+    nvim/lazy-lock.json
+    nvim/lua/plugins/conform.lua
+    nvim/lua/plugins/lsp.lua
+    nvim/lua/plugins/python.lua
+    nvim/ruff-django.toml
+    packages/apt.txt
+    vscode/extensions.txt
+    vscode/keybindings.json
+    vscode/settings.json
+  )
+
+  for relative in "${required_files[@]}"; do
+    [[ -f "$SCRIPT_DIR/$relative" ]] || die "Missing repository file: $relative"
+  done
 }
 
 read_apt_packages() {
@@ -280,11 +302,16 @@ install_config_links() {
   link_config "$SCRIPT_DIR/git/.gitconfig" "$TARGET_HOME/.gitconfig" .gitconfig
   link_config "$SCRIPT_DIR/kitty" "$TARGET_HOME/.config/kitty" .config/kitty
   link_config "$SCRIPT_DIR/nvim" "$TARGET_HOME/.config/nvim" .config/nvim
+  link_config "$SCRIPT_DIR/vscode/keybindings.json" "$TARGET_HOME/.config/Code/User/keybindings.json" .config/Code/User/keybindings.json
+  link_config "$SCRIPT_DIR/vscode/settings.json" "$TARGET_HOME/.config/Code/User/settings.json" .config/Code/User/settings.json
   link_config "$SCRIPT_DIR/tmux/.tmux.conf" "$TARGET_HOME/.tmux.conf" .tmux.conf
   link_config "$SCRIPT_DIR/zsh/.zshrc" "$TARGET_HOME/.zshrc" .zshrc
   link_config "$SCRIPT_DIR/zsh/.zprofile" "$TARGET_HOME/.zprofile" .zprofile
 
-  run mkdir -p "$TARGET_HOME/.local/share/nvim/site/spell"
+  run mkdir -p \
+    "$TARGET_HOME/.cache/nvim" \
+    "$TARGET_HOME/.local/share/nvim/site/spell" \
+    "$TARGET_HOME/.local/state/nvim"
 }
 
 install_vscode_extensions() {
@@ -305,6 +332,42 @@ install_vscode_extensions() {
   done <"$manifest"
 }
 
+configure_caps_as_escape() {
+  local current options_key schema updated
+  schema=org.gnome.desktop.input-sources
+  options_key=xkb-options
+
+  if ! command -v gsettings >/dev/null 2>&1; then
+    log "GNOME gsettings is unavailable; skipping Caps Lock remapping"
+    return
+  fi
+
+  if ! current=$(gsettings get "$schema" "$options_key" 2>/dev/null); then
+    warn "Could not read GNOME keyboard options; skipping Caps Lock remapping."
+    return
+  fi
+
+  case "$current" in
+    *"'caps:escape'"* | *"'caps:swapescape'"*)
+      log "Caps Lock is already configured as Escape: $current"
+      return
+      ;;
+    "[]" | "@as []")
+      updated="['caps:escape']"
+      ;;
+    \[*\])
+      updated="${current%]}, 'caps:escape']"
+      ;;
+    *)
+      warn "Unexpected GNOME keyboard option format: $current"
+      return
+      ;;
+  esac
+
+  run gsettings set "$schema" "$options_key" "$updated"
+  log "Configured Caps Lock as Escape for Linux applications"
+}
+
 version_at_least() {
   local current=$1 required=$2 first
   first=$(printf '%s\n%s\n' "$required" "$current" | sort -V | head -n 1)
@@ -312,22 +375,95 @@ version_at_least() {
 }
 
 sync_neovim_plugins() {
-  local nvim_bin version
+  local cpp_checksum_before cpp_smoke nvim_bin python_smoke ruff_bin ruff_config tool version
+  local -a nvim_env required_tools
 
   hash -r
   nvim_bin=$(command -v nvim || true)
-  [[ -n "$nvim_bin" ]] || die "Neovim was not found after package installation."
-  version=$($nvim_bin --version | awk 'NR == 1 { sub(/^v/, "", $2); print $2 }')
-  version_at_least "$version" 0.11.0 ||
-    die "This config requires Neovim 0.11 or newer; found $version at $nvim_bin."
+  if [[ -z "$nvim_bin" ]]; then
+    if ((DRY_RUN)); then
+      nvim_bin=nvim
+      log "Neovim is not installed yet; dry-run assumes the package phase will provide it"
+    else
+      die "Neovim was not found after package installation."
+    fi
+  else
+    version=$(NVIM_LOG_FILE=/dev/null "$nvim_bin" --version | awk 'NR == 1 { sub(/^v/, "", $2); print $2 }')
+    version_at_least "$version" 0.11.0 ||
+      die "This config requires Neovim 0.11 or newer; found $version at $nvim_bin."
+  fi
+
+  # Snap applications export private XDG paths to their integrated terminals.
+  # Use the target user's normal paths explicitly so Neovim never restores a
+  # second, incomplete plugin/tool installation under ~/snap/.
+  nvim_env=(
+    env
+    "HOME=$TARGET_HOME"
+    "XDG_CONFIG_HOME=$TARGET_HOME/.config"
+    "XDG_DATA_HOME=$TARGET_HOME/.local/share"
+    "XDG_CACHE_HOME=$TARGET_HOME/.cache"
+    "XDG_STATE_HOME=$TARGET_HOME/.local/state"
+    "NVIM_LOG_FILE=$TARGET_HOME/.local/state/nvim/log"
+  )
+  required_tools=(ruff basedpyright-langserver djlsp djlint)
 
   if ((DRY_RUN)); then
-    print_command "$nvim_bin" --headless '+Lazy! restore' +qa
+    print_command "${nvim_env[@]}" "$nvim_bin" --headless -i NONE '+Lazy! restore' '+qa!'
+    print_command "${nvim_env[@]}" "$nvim_bin" --headless -i NONE '+MasonToolsInstallSync' '+qa!'
+    log "Would verify Mason tools, Django Ruff defaults, Python format-on-save, and C/C++ save isolation"
     return
   fi
 
   log "Restoring Neovim plugins from lazy-lock.json (the first run can take a few minutes)"
-  "$nvim_bin" --headless '+Lazy! restore' +qa
+  "${nvim_env[@]}" "$nvim_bin" --headless -i NONE '+Lazy! restore' '+qa!'
+
+  log "Installing the configured Python and Django language tools with Mason"
+  "${nvim_env[@]}" "$nvim_bin" --headless -i NONE '+MasonToolsInstallSync' '+qa!'
+
+  for tool in "${required_tools[@]}"; do
+    [[ -x "$TARGET_HOME/.local/share/nvim/mason/bin/$tool" ]] ||
+      die "Mason did not install the required Neovim tool: $tool"
+  done
+  log "Verified the required Python and Django Neovim tools"
+
+  ruff_bin="$TARGET_HOME/.local/share/nvim/mason/bin/ruff"
+  ruff_config="$TARGET_HOME/.config/nvim/ruff-django.toml"
+  [[ -r "$ruff_config" ]] || die "Django Ruff defaults were not linked: $ruff_config"
+
+  new_temp_dir
+  python_smoke="$TEMP_DIR/views.py"
+  cpp_smoke="$TEMP_DIR/main.cpp"
+  printf '%s\n' \
+    'from pathlib import Path' \
+    'import os' \
+    '' \
+    '' \
+    'def sample( value:int): return Path(os.getcwd()) / str(value)' \
+    >"$python_smoke"
+  printf '%s\n' '#include <iostream>' 'int main(){std::cout<<1;return 0;}' >"$cpp_smoke"
+  cpp_checksum_before=$(cksum <"$cpp_smoke")
+
+  log "Testing Python import organization and format-on-save"
+  (
+    cd "$TEMP_DIR"
+    "${nvim_env[@]}" "NVIM_LOG_FILE=$TEMP_DIR/nvim-python.log" \
+      "$nvim_bin" --headless -i NONE "$python_smoke" \
+      '+set filetype=python' '+write' '+qa!'
+  )
+  "$ruff_bin" check --no-cache --select I001 --config "$ruff_config" "$python_smoke"
+  "$ruff_bin" format --check --config "$ruff_config" "$python_smoke"
+
+  log "Testing that format-on-save remains disabled for competitive-programming C/C++ files"
+  (
+    cd "$TEMP_DIR"
+    "${nvim_env[@]}" "NVIM_LOG_FILE=$TEMP_DIR/nvim-cpp.log" \
+      "$nvim_bin" --headless -i NONE "$cpp_smoke" \
+      '+set filetype=cpp' '+write' '+qa!'
+  )
+  [[ "$(cksum <"$cpp_smoke")" == "$cpp_checksum_before" ]] ||
+    die "The Neovim smoke test unexpectedly reformatted a C++ file on save."
+
+  log "Verified Neovim save behavior for Python/Django and competitive programming"
 }
 
 change_login_shell() {
@@ -345,6 +481,7 @@ for arg in "$@"; do
     --no-extras) INSTALL_EXTRAS=0 ;;
     --no-neovim-sync) SYNC_NEOVIM=0 ;;
     --no-vscode) INSTALL_VSCODE_EXTENSIONS=0 ;;
+    --no-keyboard) CONFIGURE_KEYBOARD=0 ;;
     --change-shell) CHANGE_SHELL=1 ;;
     -h | --help) usage; exit 0 ;;
     *) die "Unknown option: $arg (use --help)" ;;
@@ -354,8 +491,7 @@ done
 [[ "$(uname -s)" == Linux ]] || die "This installer supports Linux only."
 ((EUID != 0)) || die "Run this script as your normal user, not with sudo. It requests sudo only for system packages."
 [[ "$TARGET_HOME" == /* && "$TARGET_HOME" != / ]] || die "The target home must be an absolute, non-root path."
-[[ -f "$SCRIPT_DIR/README.md" && -d "$SCRIPT_DIR/nvim" ]] ||
-  die "Run the installer from a complete copy of the dotfiles folder."
+validate_repository
 
 trap cleanup EXIT
 
@@ -372,6 +508,7 @@ fi
 
 install_config_links
 
+((CONFIGURE_KEYBOARD)) && configure_caps_as_escape
 ((INSTALL_VSCODE_EXTENSIONS)) && install_vscode_extensions
 ((SYNC_NEOVIM)) && sync_neovim_plugins
 ((CHANGE_SHELL)) && change_login_shell

@@ -5,6 +5,7 @@
 -- Define Groups
 vim.api.nvim_create_augroup("compile", { clear = true })
 vim.api.nvim_create_augroup("cp", { clear = true })
+local cpp_indent_group = vim.api.nvim_create_augroup("CppIndent", { clear = true })
 
 -- NvChad's current TSInstallAll command targets the rewritten Treesitter API.
 -- This config intentionally uses the Neovim 0.11-compatible legacy branch.
@@ -100,9 +101,34 @@ vim.api.nvim_create_autocmd("BufEnter", { -- Load CP template
 
 -- C/C++ AutoCMDs
 vim.api.nvim_create_autocmd("FileType", {
+  group = cpp_indent_group,
   pattern = { "c", "cpp", "h", "hpp" },
   callback = function()
     vim.bo.commentstring = "/* %s */"
+    vim.bo.cindent = true
+    -- Indent public:/private:/protected: one level inside the class and
+    -- declarations one additional level below the access specifier.
+    vim.bo.cinoptions = "g1s,h1s"
+  end,
+})
+
+-- Reindent C++ before writing. Competitive-programming files are small, and
+-- using Neovim's built-in '=' operator avoids applying an opinionated external
+-- clang-format style to the rest of the code.
+vim.api.nvim_create_autocmd("BufWritePre", {
+  group = cpp_indent_group,
+  pattern = { "*.cc", "*.cpp", "*.cxx", "*.hh", "*.hpp", "*.hxx" },
+  callback = function(args)
+    if vim.bo[args.buf].filetype ~= "cpp" or not vim.bo[args.buf].modifiable then
+      return
+    end
+
+    vim.api.nvim_buf_call(args.buf, function()
+      local view = vim.fn.winsaveview()
+      pcall(vim.cmd, "silent undojoin")
+      vim.cmd "silent keepjumps normal! gg=G"
+      vim.fn.winrestview(view)
+    end)
   end,
 })
 
