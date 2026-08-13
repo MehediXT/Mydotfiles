@@ -409,13 +409,17 @@ sync_neovim_plugins() {
 
   if ((DRY_RUN)); then
     print_command "${nvim_env[@]}" "$nvim_bin" --headless -i NONE '+Lazy! restore' '+qa!'
+    print_command "${nvim_env[@]}" "$nvim_bin" --headless -i NONE '+TSInstallAllSync' '+qa!'
     print_command "${nvim_env[@]}" "$nvim_bin" --headless -i NONE '+MasonToolsInstallSync' '+qa!'
-    log "Would verify Mason tools, Django Ruff defaults, Python format-on-save, and C/C++ save isolation"
+    log "Would verify Treesitter parsers, Mason tools, Django Ruff defaults, Python format-on-save, and C/C++ save isolation"
     return
   fi
 
   log "Restoring Neovim plugins from lazy-lock.json (the first run can take a few minutes)"
   "${nvim_env[@]}" "$nvim_bin" --headless -i NONE '+Lazy! restore' '+qa!'
+
+  log "Installing and verifying the configured Treesitter parsers"
+  "${nvim_env[@]}" "$nvim_bin" --headless -i NONE '+TSInstallAllSync' '+qa!'
 
   log "Installing the configured Python and Django language tools with Mason"
   "${nvim_env[@]}" "$nvim_bin" --headless -i NONE '+MasonToolsInstallSync' '+qa!'

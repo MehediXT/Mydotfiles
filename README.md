@@ -128,10 +128,11 @@ The Neovim configuration provides:
 Format-on-save is deliberately limited to Python and Django templates. It does
 not change the C/C++ competitive-programming save behavior.
 
-The installer restores the plugins and then runs Mason synchronously. It
-verifies that `ruff`, `basedpyright-langserver`, `djlsp`, and `djlint` were
-installed before reporting success. On later Neovim starts, the configured
-Mason tool installer also repairs missing tools automatically.
+The installer restores the plugins, installs every configured Treesitter parser
+synchronously, and then runs Mason synchronously. It verifies the parsers and
+that `ruff`, `basedpyright-langserver`, `djlsp`, and `djlint` were installed
+before reporting success. On later Neovim starts, the configured Treesitter and
+Mason installers also repair missing components automatically.
 
 The installer also performs save smoke tests: an intentionally unformatted
 Python file must be organized and formatted by `:w`, while an intentionally
@@ -183,6 +184,13 @@ If a language tool is ever missing, repair the declared Mason tools with:
 
 ```bash
 nvim --headless -i NONE '+MasonToolsInstallSync' '+qa!'
+```
+
+If syntax highlighting is missing, install and verify all declared Treesitter
+parsers with:
+
+```bash
+nvim --headless -i NONE '+TSInstallAllSync' '+qa!'
 ```
 
 ## Caps Lock as Escape in VSCodeVim

@@ -9,14 +9,51 @@ local cpp_indent_group = vim.api.nvim_create_augroup("CppIndent", { clear = true
 
 -- NvChad's current TSInstallAll command targets the rewritten Treesitter API.
 -- This config intentionally uses the Neovim 0.11-compatible legacy branch.
-pcall(vim.api.nvim_del_user_command, "TSInstallAll")
-vim.api.nvim_create_user_command("TSInstallAll", function()
+local function install_configured_treesitter_parsers(sync)
   local spec = require("lazy.core.config").plugins["nvim-treesitter"]
   local opts = require("lazy.core.plugin").values(spec, "opts", false)
+  local was_loaded = spec._.loaded ~= nil
 
+  -- On a fresh start, let the plugin's setup perform the installation once.
+  -- Selecting sync mode before loading prevents its normal async install from
+  -- racing this command during the installer's headless bootstrap.
+  opts.sync_install = sync
   require("lazy").load { plugins = { "nvim-treesitter" } }
-  require("nvim-treesitter.install").ensure_installed(opts.ensure_installed or {})
+
+  if was_loaded then
+    local installer = require "nvim-treesitter.install"
+    local install = sync and installer.ensure_installed_sync or installer.ensure_installed
+    install(opts.ensure_installed or {})
+  end
+end
+
+local function verify_configured_treesitter_parsers()
+  local spec = require("lazy.core.config").plugins["nvim-treesitter"]
+  local opts = require("lazy.core.plugin").values(spec, "opts", false)
+  local missing = {}
+
+  for _, parser in ipairs(opts.ensure_installed or {}) do
+    local ok = pcall(vim.treesitter.language.add, parser)
+    if not ok then
+      table.insert(missing, parser)
+    end
+  end
+
+  if #missing > 0 then
+    vim.api.nvim_err_writeln("Missing Treesitter parsers: " .. table.concat(missing, ", "))
+    vim.cmd "cquit 1"
+  end
+end
+
+pcall(vim.api.nvim_del_user_command, "TSInstallAll")
+vim.api.nvim_create_user_command("TSInstallAll", function()
+  install_configured_treesitter_parsers(false)
 end, { desc = "Install all configured Treesitter parsers" })
+
+vim.api.nvim_create_user_command("TSInstallAllSync", function()
+  install_configured_treesitter_parsers(true)
+  verify_configured_treesitter_parsers()
+end, { desc = "Install and verify all configured Treesitter parsers synchronously" })
 
 -- General AutoCMDs
 vim.cmd [[
