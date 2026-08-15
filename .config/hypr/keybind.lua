@@ -43,7 +43,7 @@ local KEY = {
 	MOVE_SWAP_DOWN = ("%s + SHIFT + CTRL + down"):format(mainMod),
 
 	SHOT_WINDOW = ("%s + PRINT"):format(mainMod),
-	SHOT_ANNOTATE = ("%s + A"):format(mainMod),
+	SHOT_ANNOTATE = "SHIFT + PRINT",
 
 	WORKSPACE_NEXT = ("%s + CTRL + right"):format(mainMod),
 	WORKSPACE_PREV = ("%s + CTRL + left"):format(mainMod),
@@ -99,10 +99,10 @@ hl.bind(KEY.MOVE_SWAP_UP, function() hl.exec_cmd("bash -c 'grep -q true <<< $(hy
 hl.bind(KEY.MOVE_SWAP_DOWN, function() hl.exec_cmd("bash -c 'grep -q true <<< $(hyprctl activewindow -j | jq -r .floating) && hyprctl dispatch moveactive 0 30 || hyprctl dispatch movewindow d'") end, { description = "Move or swap window down" })
 
 -- 4. Screenshots
-hl.bind(KEY.SHOT_WINDOW, hl.dsp.exec_cmd("HYPRSHOT_DIR=~/Pictures/Screenshots hyprshot -m window"), { description = "Screenshot window" })
-hl.bind("ALT + PRINT",         hl.dsp.exec_cmd("HYPRSHOT_DIR=~/Pictures/Screenshots hyprshot -m output"), { description = "Screenshot monitor" })
-hl.bind("SHIFT + PRINT",       hl.dsp.exec_cmd("HYPRSHOT_DIR=~/Pictures/Screenshots hyprshot -m region"), { description = "Screenshot region" })
-hl.bind(KEY.SHOT_ANNOTATE, hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | satty --filename - --output-filename ~/Pictures/Screenshots/Screenshot-$(date '+%Y%m%d-%H:%M:%S').png"), { description = "Annotate screenshot" })
+hl.bind("PRINT", hl.dsp.exec_cmd(scrPath .. "/screenshot.sh region"), { description = "Screenshot region" })
+hl.bind(KEY.SHOT_WINDOW, hl.dsp.exec_cmd(scrPath .. "/screenshot.sh window"), { description = "Screenshot window" })
+hl.bind("ALT + PRINT", hl.dsp.exec_cmd(scrPath .. "/screenshot.sh output"), { description = "Screenshot monitor" })
+hl.bind(KEY.SHOT_ANNOTATE, hl.dsp.exec_cmd(scrPath .. "/screenshot.sh annotate"), { description = "Screenshot and annotate" })
 
 -- 5. Workspace Switching
 for i = 1, 9 do
