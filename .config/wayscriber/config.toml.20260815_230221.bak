@@ -1,0 +1,147 @@
+# Wayscriber 0.9.x configuration for Hyprland + Noctalia.
+# Every setting is optional; unspecified settings use Wayscriber's defaults.
+config_revision = 3
+
+[tray]
+# Noctalia/Quickshell renders the colored pixmap reliably.
+icon_style = "colored"
+
+[updates]
+check = true
+notify = true
+interval_hours = 24
+
+[presets]
+
+[ui]
+theme = "dark"
+reduced_motion = "off"
+show_status_bar = true
+active_output_badge = true
+multi_monitor_enabled = true
+status_bar_position = "bottom-left"
+
+[presets.slot_2]
+tool = "pen"
+color = [
+    46,
+    194,
+    126,
+]
+size = 4.118175233494152
+eraser_kind = "Circle"
+eraser_mode = "brush"
+marker_opacity = 0.32
+fill_enabled = false
+font_size = 15.563628040660511
+text_background_enabled = false
+arrow_length = 20.0
+arrow_angle = 26.0
+arrow_head_at_end = true
+polygon_sides = 5
+show_status_bar = true
+
+[ui.toolbar]
+backend = "auto"
+layout_mode = "regular"
+top_pinned = true
+top_display_mode = "full"
+use_icons = true
+show_more_colors = true
+show_tool_preview = true
+zoom_chip_display = "while-zoomed"
+
+[presets.slot_2.tool_settings]
+eraser_size = 48.66363636363637
+
+[performance]
+buffer_count = 3
+enable_vsync = false
+# Match the 100 Hz display configured in Hyprland without wasting GPU time.
+max_fps_no_vsync = 100
+ui_animation_fps = 30
+
+[presets.slot_2.tool_settings.pen]
+color = [
+    46,
+    194,
+    126,
+]
+size = 4.118175233494152
+
+[presets.slot_2.tool_settings.line]
+color = [
+    245,
+    51,
+    63,
+]
+size = 3.0
+
+[presets.slot_2.tool_settings.rect]
+color = [
+    245,
+    51,
+    63,
+]
+size = 3.0
+
+[presets.slot_2.tool_settings.ellipse]
+color = [
+    245,
+    51,
+    63,
+]
+size = 3.0
+
+[presets.slot_2.tool_settings.arrow]
+color = [
+    245,
+    51,
+    63,
+]
+size = 3.0
+
+[presets.slot_2.tool_settings.blur]
+color = [
+    245,
+    51,
+    63,
+]
+size = 3.0
+
+[presets.slot_2.tool_settings.marker]
+color = [
+    245,
+    51,
+    63,
+]
+size = 32.62726932872425
+
+[presets.slot_2.tool_settings.step_marker]
+color = [
+    245,
+    51,
+    63,
+]
+size = 19.2
+
+[presets.slot_2.drag_tools.left]
+drag_tool = "pen"
+shift_drag_tool = "line"
+ctrl_drag_tool = "rect"
+ctrl_shift_drag_tool = "arrow"
+tab_drag_tool = "ellipse"
+
+[presets.slot_2.drag_tools.right]
+drag_tool = "default"
+shift_drag_tool = "default"
+ctrl_drag_tool = "default"
+ctrl_shift_drag_tool = "default"
+tab_drag_tool = "default"
+
+[presets.slot_2.drag_tools.middle]
+drag_tool = "default"
+shift_drag_tool = "default"
+ctrl_drag_tool = "default"
+ctrl_shift_drag_tool = "default"
+tab_drag_tool = "default"

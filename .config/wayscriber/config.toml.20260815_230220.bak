@@ -1,0 +1,37 @@
+# Wayscriber 0.9.x configuration for Hyprland + Noctalia.
+# Every setting is optional; unspecified settings use Wayscriber's defaults.
+config_revision = 3
+
+[tray]
+# Noctalia/Quickshell renders the colored pixmap reliably.
+icon_style = "colored"
+
+[updates]
+check = true
+notify = true
+interval_hours = 24
+
+[ui]
+theme = "dark"
+reduced_motion = "off"
+show_status_bar = true
+active_output_badge = true
+multi_monitor_enabled = true
+status_bar_position = "bottom-left"
+
+[ui.toolbar]
+backend = "auto"
+layout_mode = "regular"
+top_pinned = true
+top_display_mode = "full"
+use_icons = true
+show_more_colors = true
+show_tool_preview = true
+zoom_chip_display = "while-zoomed"
+
+[performance]
+buffer_count = 3
+enable_vsync = false
+# Match the 100 Hz display configured in Hyprland without wasting GPU time.
+max_fps_no_vsync = 100
+ui_animation_fps = 30

@@ -1,15 +1,13 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    -- NvChad + Neovim 0.11 need the legacy master branch; main is a full rewrite.
-    branch = "master",
-    build = ":TSUpdate",
+    -- The legacy master branch only supports Neovim 0.10/0.11. Neovim 0.12
+    -- requires the rewritten main branch and its native highlighting API.
+    branch = "main",
+    lazy = false,
+    dependencies = { "neovim-treesitter/treesitter-parser-registry" },
+    build = ":TSUpdate | TSInstallAll",
     opts = require "configs.treesitter",
-    -- The legacy branch's top-level setup() does not accept configuration.
-    -- Call its configs module directly so ensure_installed/highlight/indent work.
-    config = function(_, opts)
-      require("nvim-treesitter.configs").setup(opts)
-    end,
   },
 }
 --yooo

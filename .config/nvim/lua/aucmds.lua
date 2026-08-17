@@ -7,23 +7,14 @@ vim.api.nvim_create_augroup("compile", { clear = true })
 vim.api.nvim_create_augroup("cp", { clear = true })
 local cpp_indent_group = vim.api.nvim_create_augroup("CppIndent", { clear = true })
 
--- NvChad's current TSInstallAll command targets the rewritten Treesitter API.
--- This config intentionally uses the Neovim 0.11-compatible legacy branch.
 local function install_configured_treesitter_parsers(sync)
   local spec = require("lazy.core.config").plugins["nvim-treesitter"]
   local opts = require("lazy.core.plugin").values(spec, "opts", false)
-  local was_loaded = spec._.loaded ~= nil
-
-  -- On a fresh start, let the plugin's setup perform the installation once.
-  -- Selecting sync mode before loading prevents its normal async install from
-  -- racing this command during the installer's headless bootstrap.
-  opts.sync_install = sync
   require("lazy").load { plugins = { "nvim-treesitter" } }
 
-  if was_loaded then
-    local installer = require "nvim-treesitter.install"
-    local install = sync and installer.ensure_installed_sync or installer.ensure_installed
-    install(opts.ensure_installed or {})
+  local task = require("nvim-treesitter").install(opts.ensure_installed or {})
+  if sync then
+    task:wait(300000)
   end
 end
 
@@ -142,30 +133,13 @@ vim.api.nvim_create_autocmd("FileType", {
   pattern = { "c", "cpp", "h", "hpp" },
   callback = function()
     vim.bo.commentstring = "/* %s */"
+    -- Treesitter's C/C++ indentation can reset nested braces to column zero.
+    -- Let Neovim's stable C indenter handle these filetypes instead.
+    vim.bo.indentexpr = ""
     vim.bo.cindent = true
     -- Indent public:/private:/protected: one level inside the class and
     -- declarations one additional level below the access specifier.
     vim.bo.cinoptions = "g1s,h1s"
-  end,
-})
-
--- Reindent C++ before writing. Competitive-programming files are small, and
--- using Neovim's built-in '=' operator avoids applying an opinionated external
--- clang-format style to the rest of the code.
-vim.api.nvim_create_autocmd("BufWritePre", {
-  group = cpp_indent_group,
-  pattern = { "*.cc", "*.cpp", "*.cxx", "*.hh", "*.hpp", "*.hxx" },
-  callback = function(args)
-    if vim.bo[args.buf].filetype ~= "cpp" or not vim.bo[args.buf].modifiable then
-      return
-    end
-
-    vim.api.nvim_buf_call(args.buf, function()
-      local view = vim.fn.winsaveview()
-      pcall(vim.cmd, "silent undojoin")
-      vim.cmd "silent keepjumps normal! gg=G"
-      vim.fn.winrestview(view)
-    end)
   end,
 })
 

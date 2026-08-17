@@ -1,6 +1,6 @@
 hl.monitor({
     output = "",
-    mode = "preferred",
+    mode = "1920x1080@100",
     position = "auto",
     scale = "1",
 })

@@ -21,6 +21,7 @@ local exec_once = {
     "systemctl --user start --ignore-dependencies xdg-desktop-portal-hyprland.service xdg-desktop-portal.service",
     "noctalia",
     "wl-clip-persist --clipboard regular",
+    "wayscriber --daemon",
     "sh -c 'sleep 3 && easyeffects --gapplication-service'",
 }
 

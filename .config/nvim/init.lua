@@ -2,6 +2,10 @@
 vim.g.base46_cache = vim.fn.stdpath "data" .. "/base46/"
 vim.g.mapleader = " "
 
+-- User-local tools (including tree-sitter-cli) must be visible to Neovim.
+local user_bin = vim.fs.joinpath(vim.uv.os_homedir(), ".local", "bin")
+vim.env.PATH = user_bin .. ":" .. vim.env.PATH
+
 -- bootstrap lazy and all plugins
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
 

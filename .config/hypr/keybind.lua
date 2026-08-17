@@ -19,6 +19,8 @@ local KEY = {
 	STEAM = ("%s + S"):format(mainMod),
 	MUSIC = ("%s + M"):format(mainMod),
 	VIDEO = ("%s + V"):format(mainMod),
+	WAYSCRIBER_TOGGLE = ("%s + SHIFT + A"):format(mainMod),
+	WAYSCRIBER_LIGHT = ("%s + CTRL + A"):format(mainMod),
 
 	CLOSE = ("%s + Q"):format(mainMod),
 	FLOAT = ("%s + W"):format(mainMod),
@@ -71,6 +73,8 @@ hl.bind(KEY.SETTINGS, hl.dsp.exec_cmd("noctalia msg settings-toggle"), { descrip
 hl.bind(KEY.STEAM, hl.dsp.exec_cmd("steam"), { description = "Steam" })
 hl.bind(KEY.MUSIC, hl.dsp.exec_cmd("quodlibet"), { description = "Music player" })
 hl.bind(KEY.VIDEO, hl.dsp.exec_cmd("mpv --player-operation-mode=pseudo-gui --force-window=immediate"), { description = "Video player" })
+hl.bind(KEY.WAYSCRIBER_TOGGLE, hl.dsp.exec_cmd("wayscriber --daemon-toggle"), { description = "Toggle Wayscriber" })
+hl.bind(KEY.WAYSCRIBER_LIGHT, hl.dsp.exec_cmd("wayscriber --light-toggle"), { description = "Toggle Wayscriber passthrough" })
 
 -- 2. Window Management
 hl.bind(KEY.CLOSE, hl.dsp.window.close(), { description = "Close window" })
