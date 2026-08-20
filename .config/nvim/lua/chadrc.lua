@@ -39,7 +39,7 @@ local options = {
         bg = "NONE",
       },
     },
-    transparency = false,
+    transparency = true,
   },
 
   ui = {
