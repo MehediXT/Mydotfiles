@@ -108,7 +108,6 @@ hl.bind(KEY.SHOT_WINDOW, hl.dsp.exec_cmd(scrPath .. "/screenshot.sh window"), { 
 hl.bind("ALT + PRINT", hl.dsp.exec_cmd(scrPath .. "/screenshot.sh output"), { description = "Screenshot monitor" })
 hl.bind(KEY.SHOT_ANNOTATE, hl.dsp.exec_cmd(scrPath .. "/screenshot.sh annotate"), { description = "Screenshot and annotate" })
 
--- 5. Workspace Switching
 for i = 1, 9 do
 	local focusKey = ("%s + %d"):format(mainMod, i)
 	local moveKey = ("%s + SHIFT + %d"):format(mainMod, i)
