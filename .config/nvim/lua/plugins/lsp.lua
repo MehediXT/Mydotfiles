@@ -90,6 +90,31 @@ return {
 
     local default_publish_diagnostics = vim.lsp.handlers["textDocument/publishDiagnostics"]
 
+    local function is_unused_variable_diagnostic(diagnostic)
+      local code = diagnostic.code
+      if type(code) == "table" then
+        code = code.value
+      end
+
+      -- clangd commonly reports this as -Wunused-variable, but some versions
+      -- expose the normalized code without the compiler-warning prefix.
+      return code == "-Wunused-variable"
+        or code == "unused-variable"
+        or (diagnostic.message or ""):match("unused variable") ~= nil
+    end
+
+    local function publish_clangd_diagnostics(err, result, ctx, config)
+      if result and type(result.diagnostics) == "table" then
+        local diagnostics = vim.tbl_filter(function(diagnostic)
+          return not is_unused_variable_diagnostic(diagnostic)
+        end, result.diagnostics)
+
+        result = vim.tbl_extend("force", result, { diagnostics = diagnostics })
+      end
+
+      return default_publish_diagnostics(err, result, ctx, config)
+    end
+
     local function publish_python_diagnostics(err, result, ctx, config)
       local client = vim.lsp.get_client_by_id(ctx.client_id)
       if
@@ -121,6 +146,9 @@ return {
       "-Wall",
       "-Wextra",
       "-Wshadow",
+      -- Keep unused locals from producing an inline warning in competitive
+      -- programming buffers; other warnings remain enabled.
+      "-Wno-unused-variable",
     }
 
     if vim.fn.executable "g++" == 1 then
@@ -146,6 +174,9 @@ return {
       },
       init_options = {
         fallbackFlags = clangd_fallback_flags,
+      },
+      handlers = {
+        ["textDocument/publishDiagnostics"] = publish_clangd_diagnostics,
       },
     })
 

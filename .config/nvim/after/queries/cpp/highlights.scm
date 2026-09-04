@@ -10,7 +10,27 @@
 
 ; Standard streams should not look like ordinary local variables.
 ((identifier) @variable.stream
-  (#any-of? @variable.stream "cin" "cout" "cerr" "clog")
+  ; Stream objects and manipulators are easy to miss in a sea of variables.
+  (#any-of? @variable.stream "cin" "cout" "cerr" "clog" "endl" "flush" "ws")
+  (#set! priority 130))
+
+; Make declarations stand out from later uses of the same type. The stock
+; query marks these as a generic @type, which loses useful information in
+; class-heavy C++ files.
+(class_specifier
+  name: (type_identifier) @type.definition
+  (#set! priority 130))
+
+(struct_specifier
+  name: (type_identifier) @type.definition
+  (#set! priority 130))
+
+(union_specifier
+  name: (type_identifier) @type.definition
+  (#set! priority 130))
+
+(enum_specifier
+  name: (type_identifier) @type.definition
   (#set! priority 130))
 
 ; In `visited[u]`, distinguish the indexed container from its index variable.
