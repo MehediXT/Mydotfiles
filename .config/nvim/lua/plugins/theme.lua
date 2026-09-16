@@ -34,6 +34,16 @@ return {
             ["@module.cpp"] = { fg = colors.sapphire },
             ["@variable.stream.cpp"] = { fg = colors.peach },
             ["@variable.container.cpp"] = { fg = colors.sapphire },
+
+            -- Java keeps the same readable semantic contrast as C++ while
+            -- making classes, methods, and fields easier to scan.
+            ["@function.java"] = { fg = colors.green, bold = true },
+            ["@function.call.java"] = { fg = colors.blue },
+            ["@type.java"] = { fg = colors.yellow },
+            ["@type.builtin.java"] = { fg = colors.teal },
+            ["@constructor.java"] = { fg = colors.sapphire },
+            ["@variable.member.java"] = { fg = colors.flamingo },
+            ["@constant.java"] = { fg = colors.peach },
           }
         end,
       })

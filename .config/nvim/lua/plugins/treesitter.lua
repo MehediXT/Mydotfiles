@@ -6,8 +6,19 @@ return {
     branch = "main",
     lazy = false,
     dependencies = { "neovim-treesitter/treesitter-parser-registry" },
-    build = ":TSUpdate | TSInstallAll",
+    -- TSInstallAll is created by NvChad during init, so it is unavailable
+    -- when lazy.nvim runs a fresh-install build command.
+    build = ":TSUpdate",
     opts = require "configs.treesitter",
+    config = function(_, opts)
+      local treesitter = require "nvim-treesitter"
+
+      -- The main branch has no legacy configs.setup() layer. Keep the
+      -- install directory at its default and install our configured parsers
+      -- from the normal Neovim startup path.
+      treesitter.setup()
+      treesitter.install(opts.ensure_installed or {})
+    end,
   },
 }
 --yooo

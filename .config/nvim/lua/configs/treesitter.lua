@@ -2,6 +2,7 @@ return {
   ensure_installed = {
     "c",
     "cpp",
+    "java",
     -- Web stack: JavaScript parses .js and .jsx; TSX parses React TypeScript.
     "html",
     "htmldjango",

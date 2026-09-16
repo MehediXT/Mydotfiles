@@ -6,6 +6,66 @@
 vim.api.nvim_create_augroup("compile", { clear = true })
 vim.api.nvim_create_augroup("cp", { clear = true })
 local cpp_indent_group = vim.api.nvim_create_augroup("CppIndent", { clear = true })
+local treesitter_highlight_group = vim.api.nvim_create_augroup("TreesitterHighlight", { clear = true })
+local treesitter_retry_count = {}
+
+-- nvim-treesitter's current main branch provides parsers and queries, but
+-- Neovim enables the actual highlighting explicitly via vim.treesitter.start.
+-- Keep this list aligned with configs/treesitter.lua. If a parser is not
+-- installed yet, pcall preserves the normal Vim syntax fallback.
+vim.api.nvim_create_autocmd("FileType", {
+  group = treesitter_highlight_group,
+  pattern = {
+    "c",
+    "cpp",
+    "java",
+    "html",
+    "htmldjango",
+    "css",
+    "javascript",
+    "jsdoc",
+    "typescript",
+    "tsx",
+    "python",
+    "lua",
+    "vim",
+    "vimdoc",
+    "markdown",
+    "markdown_inline",
+  },
+  callback = function(args)
+    local function start_highlighting()
+      if not vim.api.nvim_buf_is_valid(args.buf) then
+        treesitter_retry_count[args.buf] = nil
+        return
+      end
+
+      local ok = pcall(vim.treesitter.start, args.buf)
+      if ok then
+        treesitter_retry_count[args.buf] = nil
+        return
+      end
+
+      -- Parser installation is asynchronous on a fresh machine. Retry for
+      -- a short period so the first opened buffer starts highlighting without
+      -- requiring a manual :edit or Neovim restart.
+      local retries = (treesitter_retry_count[args.buf] or 0) + 1
+      treesitter_retry_count[args.buf] = retries
+      if retries <= 60 then
+        vim.defer_fn(start_highlighting, 500)
+      end
+    end
+
+    start_highlighting()
+  end,
+})
+
+vim.api.nvim_create_autocmd("BufDelete", {
+  group = treesitter_highlight_group,
+  callback = function(args)
+    treesitter_retry_count[args.buf] = nil
+  end,
+})
 
 local function install_configured_treesitter_parsers(sync)
   local spec = require("lazy.core.config").plugins["nvim-treesitter"]
