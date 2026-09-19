@@ -33,8 +33,19 @@ hl.window_rule({
 
 
 hl.window_rule({
-    match = { class = "^(cs2|steam_app_730)$" },
+    -- Steam games use the steam_app_<AppID> window class.
+    match = { class = "^(cs2|steam_app_[0-9]+)$" },
     opacity = "1.0 override 1.0 override 1.0 override",
+})
+
+hl.window_rule({
+    -- War Thunder's native client changes its class when entering a battle.
+    match = { class = "^(steam_app_236390|aces.*|.*[Ww]ar.*[Tt]hunder.*)$" },
+    opacity = "1.0 override 1.0 override 1.0 override",
+    opaque = true,
+    force_rgbx = true,
+    no_blur = true,
+    no_shadow = true,
 })
 
 
