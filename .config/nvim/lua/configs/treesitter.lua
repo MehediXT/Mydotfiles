@@ -1,5 +1,7 @@
 return {
   ensure_installed = {
+    "bash",
+    "zsh",
     "c",
     "cpp",
     "java",

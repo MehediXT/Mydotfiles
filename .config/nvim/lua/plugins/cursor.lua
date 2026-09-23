@@ -23,8 +23,9 @@ return {
       -- Less fade / cleaner look
       gamma = 3.0,
 
-      -- Avoid double cursor
-      hide_target_hack = true,
+      -- Keep this false unless never_draw_over_target is also enabled.
+      -- The unsupported combination can hide or flicker the real cursor.
+      hide_target_hack = false,
     },
   },
 }

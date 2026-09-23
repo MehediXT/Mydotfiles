@@ -16,6 +16,9 @@ local treesitter_retry_count = {}
 vim.api.nvim_create_autocmd("FileType", {
   group = treesitter_highlight_group,
   pattern = {
+    "sh",
+    "bash",
+    "zsh",
     "c",
     "cpp",
     "java",

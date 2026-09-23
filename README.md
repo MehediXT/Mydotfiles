@@ -153,27 +153,30 @@ git clone https://github.com/MehediXT/Mydotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 ```
 
-There is currently no automatic installer in this repository. Copy or symlink
-only the configuration you want. For example:
+Run the installer as your normal user. It installs the package manifests,
+creates symlinks, installs the Zsh components, Nerd Font, Deno, and a compatible
+Tree-sitter CLI, and bootstraps Neovim. Existing files are moved to a timestamped
+directory under `~/.dotfiles-backup/` before they are replaced.
 
 ```bash
-ln -s ~/.dotfiles/.config/nvim ~/.config/nvim
-ln -s ~/.dotfiles/.config/kitty ~/.config/kitty
-ln -s ~/.dotfiles/.config/hypr ~/.config/hypr
-ln -s ~/.dotfiles/zsh/.zshrc ~/.zshrc
-ln -s ~/.dotfiles/zsh/.zprofile ~/.zprofile
-ln -s ~/.dotfiles/tmux/.tmux.conf ~/.tmux.conf
-ln -s ~/.dotfiles/git/.gitconfig ~/.gitconfig
+./setup.sh --dry-run
+./setup.sh
 ```
 
-Do not run those commands over existing files. Back up or move the existing
-configuration first, and create `~/.config` if it does not exist. Because
-symbolic links point into the clone, moving or deleting the repository later
-will break them.
+The installer targets Ubuntu/Debian. Use `./setup.sh --help` to skip package,
+shell, Neovim, or VS Code setup, or to opt into changing the login shell. Do not
+run the whole script with `sudo`; it requests `sudo` only for system packages.
+Because the generated symbolic links point into the clone, moving or deleting
+the repository later will break them.
 
-VS Code settings, keybindings, and the extension list are kept in `vscode/`
-but are not installed automatically. Extensions can be restored one at a
-time with `code --install-extension <extension-id>`.
+The Hyprland configuration is linked but its desktop applications are not
+installed automatically. Review `monitors.lua` and `startup.lua` before starting
+Hyprland on hardware with a different monitor or GPU.
+
+VS Code settings, keybindings, and the extension list are kept in `vscode/`.
+When the `code` CLI is available, the installer links the settings and restores
+the listed extensions. Pass `--skip-vscode` to leave the existing VS Code setup
+untouched.
 
 ## Local settings and private data
 
@@ -205,3 +208,4 @@ must be restored separately.
 | `packages/` | APT, Snap, and Flatpak package manifests |
 | `vscode/` | VS Code settings, keybindings, and extension list |
 | `ssh/` | Non-secret SSH configuration example |
+| `setup.sh` | Safe, rerunnable Ubuntu/Debian setup and Neovim bootstrap |
