@@ -306,7 +306,7 @@ static pid_t winpid(Window w);
 
 /* variables */
 static const char broken[] = "broken";
-static char stext[256];
+static char stext[512];
 static int statusw;
 static int statussig;
 static pid_t statuspid = -1;

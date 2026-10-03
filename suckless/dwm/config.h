@@ -32,17 +32,20 @@ static const unsigned int gappov    = 30;       /* vert outer gap between window
 static       int smartgaps          = 0;        /* 1 means no outer gap when there is only one window */
 static const int swallowfloating    = 0;        /* 1 means swallow floating windows by default */
 static int showbar                  = 1;        /* 0 means no bar */
-static const int showtitle          = 1;        /* 0 means no title */
+static const int showtitle          = 1;        /* show the active app or window title */
 static const int showtags           = 1;        /* 0 means no tags */
 static const int showlayout         = 1;        /* 0 means no layout indicator */
 static const int showstatus         = 1;        /* 0 means no status bar */
 static const int showfloating       = 0;        /* 0 means no floating indicator */
 static int topbar                   = 1;        /* 0 means bottom bar */
-static const unsigned int baralpha  = 0x40;     /* fully transparent; text stays opaque */
+static const unsigned int baralpha  = 0x80;     /* 25% opaque; lower values are more transparent */
 static const unsigned int borderalpha = OPAQUE; /* keep client borders solid */
 static const unsigned int alphas[]  = { OPAQUE, baralpha, borderalpha };
 static char dmenufont[]             = "monospace:size=10";
-static const char *fonts[]          = { "monospace:size=10", "Hack Nerd Font Mono:size=16", "NotoColorEmoji:pixelsize=14:antialias=true:autohint=true"  };
+static const char *fonts[]          = { "Hack:size=10", "AtkynsonMono Nerd Font Mono:size=10" };
+static char barbgcolor[]            = "#000000";
+static char barfgcolor[]            = "#96958d";
+static char baractivecolor[]        = "#d0cfc7";
 
 /* default colors used if xrdb is not loaded */
 /* With baralpha=0, XRender needs zero RGB too (premultiplied ARGB). */
@@ -58,11 +61,11 @@ static char *colors[][3] = {
 		[SchemeNorm] = { normfgcolor, normbgcolor, normbordercolor },
 		[SchemeSel]  = { selbgcolor,  selfgcolor,  selbordercolor  },
 		/* for bar --> {text, background, null} */
-		[SchemeStatus]  = { normfgcolor, normbgcolor,  normbgcolor  }, /* status R */
-		[SchemeTagsSel]  = { normfgcolor, normbgcolor,  normbgcolor  }, /* tag L selected */
-		[SchemeTagsNorm]  = { selbordercolor, normbgcolor,  normbgcolor  }, /* tag L unselected */
-		[SchemeInfoSel]  = { normfgcolor, normbgcolor,  normbgcolor  }, /* info M selected */
-		[SchemeInfoNorm]  = { normfgcolor, normbgcolor,  normbgcolor  }, /* info M unselected */
+		[SchemeStatus]  = { barfgcolor, barbgcolor, barbgcolor },
+		[SchemeTagsSel]  = { baractivecolor, barbgcolor, barbgcolor },
+		[SchemeTagsNorm]  = { barfgcolor, barbgcolor, barbgcolor },
+		[SchemeInfoSel]  = { barfgcolor, barbgcolor, barbgcolor },
+		[SchemeInfoNorm]  = { barfgcolor, barbgcolor, barbgcolor },
 };
 
 
@@ -240,6 +243,7 @@ static const Key keys[] = {
 
 
 /* Save a screenshot directly; Spectacle's GUI exits without opening in dwm. */
+	{ 0,                    XK_F6,     spawn,       {.v = (const char*[]){ "dwm-screenshot", "region", NULL } } },
 	{ 0,					XK_Print,  spawn,       {.v = (const char*[]){ "dwm-screenshot", "full", NULL } } },
 	{ MODKEY,				XK_F1,     spawn,       {.v = (const char*[]){ "dwm-screenshot", "full", NULL } } },
 	{ MODKEY|ShiftMask,		XK_s,      spawn,       {.v = (const char*[]){ "dwm-screenshot", "region", NULL } } },
