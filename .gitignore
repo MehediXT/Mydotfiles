@@ -41,6 +41,9 @@ snapshots/
 *.out
 solution
 sol
+suckless/dmenu/dmenu
+suckless/dwm/dwm
+suckless/st/st
 
 # Logs
 *.log
