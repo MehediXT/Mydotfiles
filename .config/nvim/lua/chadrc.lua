@@ -27,7 +27,7 @@ local options = {
         italic = true,
       },
       NvDashAscii = {
-        bg = "blue",
+        bg = "NONE",
         fg = "black",
       },
       NvDashButtons = {
