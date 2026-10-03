@@ -38,10 +38,9 @@ static const int showlayout         = 1;        /* 0 means no layout indicator *
 static const int showstatus         = 1;        /* 0 means no status bar */
 static const int showfloating       = 0;        /* 0 means no floating indicator */
 static int topbar                   = 1;        /* 0 means bottom bar */
-static const unsigned int baralpha  = 0x80;     /* fully transparent; text stays opaque */
+static const unsigned int baralpha  = 0x40;     /* fully transparent; text stays opaque */
 static const unsigned int borderalpha = OPAQUE; /* keep client borders solid */
 static const unsigned int alphas[]  = { OPAQUE, baralpha, borderalpha };
-
 static char dmenufont[]             = "monospace:size=10";
 static const char *fonts[]          = { "monospace:size=10", "Hack Nerd Font Mono:size=16", "NotoColorEmoji:pixelsize=14:antialias=true:autohint=true"  };
 
@@ -69,7 +68,7 @@ static char *colors[][3] = {
 
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
-// static const char *tags[] = { "󰎤", "󰎧", "󰎪", "󰎭", "󰎱", "󰎳", "󰎶", "󰎹", "󰎼" };
+/* static const char *tags[] = { "󰎤", "󰎧", "󰎪", "󰎭", "󰎱", "󰎳", "󰎶", "󰎹", "󰎼" }; */
 
 
 static const Rule rules[] = {
@@ -249,7 +248,7 @@ static const Key keys[] = {
 
 
 /* other bindings */
-	{ MODKEY|ShiftMask,			XK_l,      spawn,       {.v = (const char*[]){ "dwm-lock", NULL } } },
+	{ MODKEY|ShiftMask,			XK_l,      spawn,       SHCMD("\"$HOME/.local/bin/dwm-lock\"") },
 	{ MODKEY|ShiftMask,			XK_p,      spawn,       {.v = (const char*[]){ "dwm-power-menu", NULL } } },
 	{ MODKEY,				XK_F12,    spawn,       SHCMD("playerctl next") },
 	{ MODKEY,				XK_F11,    spawn,       SHCMD("playerctl play-pause") },

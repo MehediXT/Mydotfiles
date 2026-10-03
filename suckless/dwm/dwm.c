@@ -344,7 +344,6 @@ static Window root, wmcheckwin;
 static Visual *visual;
 static unsigned int depth;
 static Colormap cmap;
-
 static xcb_connection_t *xcon;
 
 /* configuration, allows nested code to access above variables */
