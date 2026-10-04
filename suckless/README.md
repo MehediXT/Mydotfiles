@@ -1,6 +1,6 @@
 # Mehedi's suckless setup
 
-![My Arch Linux desktop running dwm, with Neovim, htop, and Neofetch in st terminals](2026-10-04_18-21-27-643123289.png)
+![My Arch Linux desktop running dwm, with Neovim, htop, and Neofetch in st terminals](scr/photo.png)
 
 My personal X11 desktop on Arch Linux, built around **dwm**, **st**, and
 **dmenu**. I use it for programming, working in the terminal, and keeping
