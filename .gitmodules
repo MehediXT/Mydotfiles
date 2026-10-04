@@ -1,0 +1,3 @@
+[submodule "suckless"]
+	path = suckless
+	url = git@github.com:MehediXT/suckless.git
