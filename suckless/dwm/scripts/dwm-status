@@ -153,17 +153,6 @@ def recording():
     return 'Rec ·'
 
 
-def music():
-    state = command('playerctl', 'status')
-    if state not in ('Playing', 'Paused'):
-        return '\uf001 No music'
-    title = command('playerctl', 'metadata', '--format', '{{artist}} - {{title}}')
-    title = ' '.join(title.split()).strip(' -') or 'Unknown track'
-    if len(title) > 36:
-        title = title[:35] + '…'
-    return f"{'\uf04c' if state == 'Paused' else '\uf04b'} {title}"
-
-
 def volume():
     output = command('wpctl', 'get-volume', '@DEFAULT_AUDIO_SINK@')
     if not output:
@@ -191,7 +180,7 @@ def status(previous, current, weather, network):
     usage = round(100 * (total - idle) / total) if total > 0 else 0
     now = datetime.now()
     parts = [recording(), f'\uf2db {temperature()}  \uefc5 {memory()}',
-             f'\uf303 {usage}%', network.text(), music(), battery(), volume(), weather.text(),
+             f'\uf303 {usage}%', network.text(), battery(), volume(), weather.text(),
              now.strftime('%A, %b ') + str(now.day) + '  ' + now.strftime('%I:%M%p').lstrip('0').lower()]
     return '  ' + ' | '.join(part for part in parts if part) + '  '
 
