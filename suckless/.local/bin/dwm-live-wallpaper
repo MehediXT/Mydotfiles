@@ -1,0 +1,21 @@
+#!/bin/sh
+
+video="${1:-$HOME/Videos/live walpaper/vidwallpaper2.mp4}"
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/dwm"
+
+[ -f "$video" ] || exit 1
+mkdir -p "$state_dir" || exit 1
+
+# Keep a restarted dwm session from starting a second wallpaper process.
+exec 9>"$state_dir/live-wallpaper.lock"
+if command -v flock >/dev/null 2>&1; then
+    flock -n 9 || exit 0
+fi
+
+exec nice -n 10 "$HOME/.local/bin/xwinwrap" \
+    -b -s -fs -st -sp -nf -ni -ov -fdt -- \
+    /bin/sh -c '
+        exec /usr/bin/mpv --wid="$1" --no-config \
+            --loop-file=inf --no-audio --no-osc --no-input-default-bindings \
+            --really-quiet --panscan=1.0 --hwdec=auto-safe "$2"
+    ' sh WID "$video"

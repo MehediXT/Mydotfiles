@@ -1,15 +1,27 @@
 #!/usr/bin/env bash
 # Compact, live X11 status line for the charcoal dwm bar.
 
+# Decode Unicode icon escapes even when the session locale is unavailable.
+export LC_ALL=C.UTF-8
+
 proc_root=/proc
 sys_root=/sys
 weather_url='https://api.open-meteo.com/v1/forecast?latitude=23.8103&longitude=90.4125&current=temperature_2m,weather_code,is_day&temperature_unit=celsius&timezone=Asia%2FDhaka&forecast_days=1'
 network_previous_interface=
 weather_pid=
 weather_dir=
-cpu_icon=''
-memory_icon=''
-usage_icon=''
+cpu_icon=$'\uf2db'
+memory_icon=$'\uefc5'
+usage_icon=$'\uf303'
+# gpu_icon=$''
+
+
+gpu_usage() {
+	local gpu_usage
+	gpu=$(timeout 2 nvidia-smi -i 0 --query-gpu=utilization.gpu \
+		--format=csv,noheader,nounits 2>/dev/null)
+	printf '\U000f08ae %s%%' "${gpu:-?}"
+}
 
 cpu_sample() {
     local label user nice system idle iowait irq softirq steal rest
@@ -70,9 +82,9 @@ volume() {
     output=$(timeout 2 wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null) || return 0
     [[ -n $output ]] || return 0
     if [[ $output == *'[MUTED]'* ]]; then
-        printf ' muted'
+        printf '\ueee8 muted'
     else
-        LC_ALL=C awk -v icon='' '
+        LC_ALL=C awk -v icon=$'\uf028' '
             $2 ~ /^[0-9]+([.][0-9]+)?$/ { printf "%s %.0f%%", icon, $2 * 100 }
         ' <<< "$output"
     fi
@@ -82,7 +94,7 @@ battery() {
     local device capacity
     for device in "$sys_root"/class/power_supply/BAT*; do
         read -r capacity 2>/dev/null < "$device/capacity" || continue
-        printf ' %s%%' "$capacity"
+        printf '\uf240 %s%%' "$capacity"
         return
     done
 }
@@ -161,11 +173,11 @@ weather_parse() {
     ) | [.weather_code, .temperature_2m, .is_day] | @tsv' "$1" 2>/dev/null) || return 1
     IFS=$'\t' read -r code temp day <<< "$fields"
     case $code in
-        0) if ((day)); then icon=''; else icon=''; fi ;;
-        1|2|3) icon='' ;;
-        45|48) icon='' ;;
-        71|73|75|77|85|86) icon='' ;;
-        *) if ((code >= 95)); then icon=''; else icon=''; fi ;;
+        0) if ((day)); then icon=$'\uf185'; else icon=$'\uf186'; fi ;;
+        1|2|3) icon=$'\uf0c2' ;;
+        45|48) icon=$'\uf0c2' ;;
+        71|73|75|77|85|86) icon=$'\uf2dc' ;;
+        *) if ((code >= 95)); then icon=$'\uf0e7'; else icon=$'\uef1c'; fi ;;
     esac
     LC_ALL=C awk -v icon="$icon" -v temp="$temp" 'BEGIN { printf "%s %.0f°C", icon, temp }'
 }
@@ -204,7 +216,7 @@ weather_text() {
             return
         fi
     fi
-    printf ' --°C'
+    printf '\uf0c2 --°C'
 }
 
 status() {
@@ -216,14 +228,16 @@ status() {
         printf "%.0f", (total > 0 ? 100 * (total - idle) / total : 0)
     }')
     parts=(
-        "$(recording)"
+        # "$(recording)"
+		"Mehedi"
+		"$(gpu_usage)"
         "$cpu_icon $(temperature)  $memory_icon $(memory)"
         "$usage_icon $usage%"
         "$network_text"
         "$(battery)"
         "$(volume)"
         "$(weather_text)"
-        "$(LC_ALL=C date '+%A, %b %-d  %-I:%M%P')"
+        "$(LC_TIME=C date '+%A, %b %-d  %-I:%M%P')"
     )
     for part in "${parts[@]}"; do
         [[ -n $part ]] || continue

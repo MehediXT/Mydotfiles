@@ -1,0 +1,50 @@
+#!/bin/sh
+set -eu
+
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/dwm"
+background="$config_dir/lockscreen/background.png"
+i3lock=/usr/bin/i3lock
+
+if [ ! -x "$i3lock" ]; then
+    printf 'dwm-lock: %s is missing or not executable\n' "$i3lock" >&2
+    exit 127
+fi
+
+# A missing wallpaper must never prevent the screen from locking. i3lock uses
+# this opaque color if the image cannot be used or while it is being loaded.
+set -- \
+    --nofork \
+    --color=090611ff \
+    --ignore-empty-password --show-failed-attempts \
+    --force-clock --indicator --refresh-rate=1 \
+    --radius=70 --ring-width=6 \
+    --ind-pos="x+w/2:y+h-190" \
+    --inside-color=090611b8 --ring-color=c084fcff \
+    --insidever-color=090611d8 --ringver-color=a78bfaff \
+    --insidewrong-color=19060bd8 --ringwrong-color=fb7185ff \
+    --keyhl-color=f0abfcff --bshl-color=f472b6ff \
+    --separator-color=00000000 --line-color=00000000 \
+    --time-str="%H:%M" --time-pos="x+w/2:y+145" \
+    --time-font="Hack" --time-size=64 --time-color=f5eaffff \
+    --timeoutline-color=170b24cc --timeoutline-width=2 \
+    --date-str="%A, %d %B" --date-pos="tx:ty+54" \
+    --date-font="Hack" --date-size=18 --date-color=d8b4feff \
+    --dateoutline-color=170b24cc --dateoutline-width=1 \
+    --greeter-text="SYSTEM LOCKED" --greeter-pos="x+w/2:y+h-72" \
+    --greeter-font="Hack" --greeter-size=16 --greeter-color=e9d5ffff \
+    --greeteroutline-color=170b24cc --greeteroutline-width=1 \
+    --verif-text="VERIFYING" --wrong-text="ACCESS DENIED" \
+    --noinput-text="" --lock-text="" --lockfailed-text="LOCK FAILED" \
+    --verif-font="Hack" --wrong-font="Hack" \
+    --verif-size=13 --wrong-size=13 \
+    --verif-color=ddd6feff --wrong-color=fda4afff \
+    --no-modkey-text
+
+if [ -r "$background" ]; then
+    set -- --image="$background" --fill "$@"
+else
+    printf 'dwm-lock: wallpaper is unreadable; using a solid background: %s\n' \
+        "$background" >&2
+fi
+
+exec "$i3lock" "$@"

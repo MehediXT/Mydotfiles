@@ -104,7 +104,12 @@ static const Layout layouts[] = { /* alt glyphs: 󱡗 󱏋 */
 	{ "󰫥",      dwindle },
 };
 
-
+/* static const char *gromittoggle[] = { */
+/* 	"gromit-mpx", "--toggle", NULL */
+/* }; */
+/* static const char *gromitclear[] = { */
+/* 	"gromit-mpx", "--clear", NULL */
+/* }; */
 /* key definitions */
 #define MODKEY Mod4Mask // windows key
 #define TAGKEYS(KEY,TAG) \
@@ -151,6 +156,8 @@ static const Arg tagexec[] = { /* spawn application when tag is middle-clicked *
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
+	/* { MODKEY,                       XK_F8,     spawn,		   {.v = gromittoggle} }, */
+	/* { MODKEY|ShiftMask,             XK_F8,     spawn,		   {.v = gromitclear} }, */
 	{ MODKEY,                       XK_d,      spawn,          {.v = dmenucmd } },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY|ShiftMask,             XK_b,      togglebar,      {0} },

@@ -1,0 +1,42 @@
+#!/bin/sh
+
+dmenu_cmd="${DMENU:-dmenu}"
+font="Hack:size=14"
+normal_bg="#0b0713"
+normal_fg="#d8b4fe"
+selected_bg="#9333ea"
+selected_fg="#ffffff"
+
+menu() {
+    "$dmenu_cmd" -i -fn "$font" \
+        -nb "$normal_bg" -nf "$normal_fg" \
+        -sb "$selected_bg" -sf "$selected_fg" "$@"
+}
+
+confirm() {
+    printf 'No\nYes\n' | menu -p "$1"
+}
+
+choice=$(printf 'Lock\nSleep\nLogout\nRestart\nShutdown\n' | menu -p 'Power')
+
+case "$choice" in
+    Lock)
+        exec "$HOME/.local/bin/dwm-lock"
+        ;;
+    Sleep)
+        "$HOME/.local/bin/dwm-lock" &
+        lock_pid=$!
+        sleep 1
+        systemctl suspend
+        wait "$lock_pid"
+        ;;
+    Logout)
+        [ "$(confirm 'Log out of dwm?')" = "Yes" ] && pkill -TERM -x dwm
+        ;;
+    Restart)
+        [ "$(confirm 'Restart the computer?')" = "Yes" ] && systemctl reboot
+        ;;
+    Shutdown)
+        [ "$(confirm 'Shut down the computer?')" = "Yes" ] && systemctl poweroff
+        ;;
+esac
