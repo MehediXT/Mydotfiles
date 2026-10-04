@@ -201,6 +201,7 @@ must be restored separately.
 | `.config/neofetch/` | Terminal system summary and custom ASCII art |
 | `.config/nvim/` | NvChad-based Neovim configuration and plugin lockfile |
 | `.config/wayscriber/` | Desktop annotation configuration and quick guide |
+| [suckless/](suckless/) | My dwm, st, and dmenu source builds and status bar scripts |
 | `bash/` and `zsh/` | Interactive and login shell configuration |
 | `tmux/` | tmux configuration |
 | `git/` | Git identity, defaults, aliases, and local include |

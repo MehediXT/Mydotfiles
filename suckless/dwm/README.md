@@ -1,4 +1,9 @@
-## dwm - dynamic window manager - bread's build
+## dwm - Mehedi's personal build
+
+This customized build is maintained in [Mydotfiles](../../README.md).
+It is based on BreadOnPenguins' patched dwm build; see [LICENSE](LICENSE)
+for the original copyright notices.
+
 ![my build](bread_dwm.png)
 comes with no guarantees or warranties <sub>(this means things may not work as expected, or at all)</sub> :^)
 
@@ -28,8 +33,8 @@ some occasional modification here and there;
 
 ## installation, setup:
 ```
-git clone https://github.com/BreadOnPenguins/dwm
-cd dwm
+git clone https://github.com/MehediXT/Mydotfiles.git
+cd Mydotfiles/suckless/dwm
 sudo make clean install
 ```
 
@@ -42,7 +47,7 @@ sudo make clean install
   - ```mod + shift + backspace``` to fully exit
 
 
-I use [dwmblocks](https://github.com/torrinfail/dwmblocks) for my statusbar ([bar scripts](https://github.com/BreadOnPenguins/scripts)), included in ```~/.xprofile``` with ```exec dwmblocks```.
+My status bar script and editing instructions are in [scripts](scripts/).
 If you intend to use another statusbar, [modify dwm appropriately](https://dwm.suckless.org/patches/anybar/) :)
 
 
@@ -78,4 +83,4 @@ I use [slock](https://tools.suckless.org/slock/) for a lockscreen (build will be
 
 My config has a few glyphs used cosmetically; for those to render properly, install a [font with extra glyphs](https://www.nerdfonts.com/#home).
 
-#### The [GNU Quilt](https://savannah.nongnu.org/projects/quilt/quilt/) system (used by Debian to manage patches in source packages) can be used to easily manage, apply, and reverse suckless software patches, and [this guide](https://codeberg.org/mok0/suckless-patches) (including ```suckless-patches.py```) can help download and prepare patches for use with Quilt. Thanks to [mok0](https://github.com/BreadOnPenguins/dwm/issues/1) for sharing!
+#### The [GNU Quilt](https://savannah.nongnu.org/projects/quilt/quilt/) system (used by Debian to manage patches in source packages) can be used to easily manage, apply, and reverse suckless software patches, and [this guide](https://codeberg.org/mok0/suckless-patches) (including ```suckless-patches.py```) can help download and prepare patches for use with Quilt. Thanks to mok0 for sharing!

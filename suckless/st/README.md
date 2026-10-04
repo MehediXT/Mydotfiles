@@ -1,4 +1,9 @@
-## simple terminal
+## st - Mehedi's personal terminal build
+
+This customized build is maintained in [Mydotfiles](../../README.md).
+It is based on BreadOnPenguins' patched st build; see [LICENSE](LICENSE)
+for the original copyright notices.
+
 My very simple fork of st, comes with no guarantees or warranties <sub>(to be clear: this means things may not work as expected, or at all)</sub> :^)
 
 ## patches added
@@ -17,7 +22,7 @@ My very simple fork of st, comes with no guarantees or warranties <sub>(to be cl
 
 ## how install pls?
 ```
-git clone https://github.com/BreadOnPenguins/st
-cd st
+git clone https://github.com/MehediXT/Mydotfiles.git
+cd Mydotfiles/suckless/st
 sudo make install
 ```
