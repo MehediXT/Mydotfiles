@@ -24,18 +24,20 @@ pkill -HUP -x dwm
 
 ## Status content
 
-Edit `~/suckless/dwm/scripts/dwm-status`. The `parts` list in `status()`
-sets the order of the sections. `time.sleep(3)` controls the status refresh.
-Dhaka weather refreshes every 15 minutes in a background thread.
+Edit `~/suckless/dwm/scripts/dwm-status.sh`. The `parts` array in `status()`
+sets the order of the sections. `sleep 3` controls the status refresh.
+Dhaka weather refreshes every 15 minutes in a background process.
 Network arrows show actual transferred bytes per second, with K/M meaning
 KiB/MiB. They measure current traffic on the default network interface.
 
-`~/.local/bin/dwm-status` links to this script. Changes take effect the next
+The script uses Bash, curl, jq, awk, GNU coreutils, `xsetroot`, and `wpctl`.
+The extensionless `dwm-status` symlink keeps the existing session launcher
+working. `~/.local/bin/dwm-status` links to it. Changes take effect the next
 time the script starts, including at the next login. To restart it immediately
 from a terminal in your dwm session:
 
 ```sh
-pkill -f '^python3 /home/mehedi/.local/bin/dwm-status$'
+pkill -f "^bash $HOME/.local/bin/dwm-status$"
 nohup ~/.local/bin/dwm-status >> ~/.local/state/dwm/bar-status.log 2>&1 &
 ```
 

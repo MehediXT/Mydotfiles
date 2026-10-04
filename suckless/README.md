@@ -20,7 +20,7 @@ All three source builds live directly in this repository as regular folders.
 | Shell | Zsh |
 | Editor | Neovim |
 | Compositor | Picom, using the XRender backend |
-| Status bar | My Python [dwm-status](dwm/scripts/dwm-status) script |
+| Status bar | My Bash [dwm-status.sh](dwm/scripts/dwm-status.sh) script |
 | Browser | Brave first, with other installed browsers as fallbacks |
 | File manager | Thunar |
 | Monitoring | htop and Neofetch |
@@ -49,7 +49,7 @@ dmenu opens in the center of the screen and supports Xresources colors.
 
 ## My status bar
 
-The [status script](dwm/scripts/dwm-status) displays:
+The [status script](dwm/scripts/dwm-status.sh) displays:
 
 - Screen recording activity.
 - CPU temperature, RAM usage, and CPU usage.
@@ -106,8 +106,8 @@ desktop setup; those helpers are not included in this folder.
 
 The builds use a C compiler, Make, X11, Xinerama, Xft, Fontconfig, and
 FreeType. dwm also links against XRender, X11-XCB, XCB, and XCB-Res. st uses
-HarfBuzz and pkg-config. The status script uses Python 3, `xsetroot`, and
-`wpctl` for audio information.
+HarfBuzz and pkg-config. The status script uses Bash, curl, jq, awk, GNU
+coreutils, `xsetroot`, and `wpctl` for audio information.
 
 Clone my repository and build each program:
 
@@ -139,7 +139,7 @@ wrapper is separate from these source builds.
 | --- | --- |
 | [dwm/config.def.h](dwm/config.def.h) | Fonts, colors, gaps, layouts, rules, and shortcuts |
 | [dwm/config.h](dwm/config.h) | Build configuration, refreshed from `config.def.h` when it changes |
-| [dwm/scripts/dwm-status](dwm/scripts/dwm-status) | Status contents, weather location, and refresh timing |
+| [dwm/scripts/dwm-status.sh](dwm/scripts/dwm-status.sh) | Status contents, weather location, and refresh timing |
 | [st/config.h](st/config.h) | Terminal font, colors, opacity, and shortcuts |
 | [dmenu/config.def.h](dmenu/config.def.h) | Launcher font, colors, and centered layout defaults |
 | [.local/](.local/) | Binaries, manual pages, and terminfo staged from this machine |
